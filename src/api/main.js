@@ -49,10 +49,16 @@ export const get = (type='API',url, token=false) => {
 
     return fetch(apiUrl+url,config)
         .then((response) => {
-            console.log(response);
-            return response.json()})
+            if(response.status ){
+                if(response.status===200){
+                    return response.json()
+                }
+                if(response.status===404){
+                    return 'Not found'
+                }
+            }
+        })
         .then((responseJson) => {
-
             return responseJson;
         })
         .catch((error) => {

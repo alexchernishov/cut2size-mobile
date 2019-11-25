@@ -20,6 +20,7 @@ const persistConfig = {
     // Whitelist (Save Specific Reducers)
     whitelist: [
         'authReducer',
+        // 'kitReducer',
     ],
     // Blacklist (Don't Save Specific Reducers)
     blacklist: [

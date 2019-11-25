@@ -1,16 +1,16 @@
 import React from 'react';
 import {
     StyleSheet,
-    SafeAreaView,
     View,
     Text,
-    Alert,
     ScrollView,
     Image,
-    TouchableHighlight
+    TouchableOpacity
 } from 'react-native';
 
-import {get} from '../../api/main'
+import { connect } from 'react-redux';
+import { store } from '../../store/store';
+import {getCalcCategories, setCabinet, setKitType} from '../../actions/kit';
 
 // Screen: Counter
 class Calculator extends React.Component {
@@ -18,86 +18,92 @@ class Calculator extends React.Component {
 
 
 
-    constructor(props) {
+    state={
+        selectedCategory:{
+            slug:false
+        }
+    };
+
+
+    constructor(props){
         super(props);
-
-        this.state={
-            rooms:[]
+        setKitType(false);
+        store.dispatch(setCabinet({cabinet: true}));
+        if(!this.props || !this.props.calcCategories){
+            store.dispatch(getCalcCategories());
         }
-    }
-
-
-    componentDidMount() {
-
-        this.getRooms();
 
     }
 
 
-    getRooms(){
-        get('kit/api/room?fields=id,name,small_image,clickable' )
-            .then(res => {
-                let rooms = res;
-                console.log(res);
-                this.setState({ rooms });
-            })
-            .catch(err => {
-                console.log(222);
-                console.log(err);
-                let rooms = [];
-                this.setState({ rooms });
-                if (err.response) {
-                    if(err.response.status === 401){
-                        // window.location.href = '/login'
-                    }
-                }
-            });
-    }
 
-
-
-    chooseRoom(e, room){
-        let type = room.name;
+    selectCategory(e,category){
         e.preventDefault();
+        this.setState({selectedCategory:category},()=>{
+            if(this.state.selectedCategory && this.state.selectedCategory.base && this.state.selectedCategory.base===1){
+                // this.props.history.push(this.props.parentRoute);
+                this.props.navigation.navigate('Room');
+            }else{
+                // setKitType(this.state.selectedCategory.slug);
+                // store.dispatch(setCabinet({cabinet: false}));
+                //
+                // this.props.history.push({
+                //     pathname: this.props.parentRoute+"/options",
+                // });
+                console.warn('NOBase');
 
-
-
-        if(typeof room.clickable !=='undefined' && room.clickable===0){
-
-            return;
-        }
-
-        // store.dispatch( setRoom({ room: type}) );
-        return false;
+            }
+        })
     }
+
+
 
 
     render() {
         return (
-                    <SafeAreaView
-                        contentInsetAdjustmentBehavior="automatic"
-                        style={styles.scrollView}
+                   <ScrollView
+                        contentContainerStyle={styles.scrollView}
+                    >
+                        {this.props.calcCategories && this.props.calcCategories.length>0 ?
+                            this.props.calcCategories.map((category,index) => {
 
-                    ><ScrollView>
-                        {this.state.rooms.map((item,index)=>{
-                            return <View style={{
-                                flex: 1,
-                                // alignSelf: 'stretch',
-                            }} key={index}><TouchableHighlight>
-                                <Image style={{
-                                    flex: 1,
-                                    // alignSelf: 'stretch',
-                                }}
-                                       width={100}
-                                       height={100}
-                                       resizeMode={'contain'}
-                                       source={{uri:item.image}}/>
-                            </TouchableHighlight>
-                                <Text>{item.name}</Text>
-                            </View>
-                        })}
+                                return <View style={{
+                                    flex: 0.4,
+                                    alignSelf: 'stretch',
+                                    justifyContent:'center',
+                                }} key={index}><TouchableOpacity
+
+                                    style={{
+                                        flex: 1,
+
+                                        // alignSelf: 'stretch',
+
+                                    }}
+                                    onPress={e=>this.selectCategory(e,  category)}>
+                                    <Image style={{
+                                        flex: 1,
+                                        alignSelf: 'stretch',
+
+                                    }}
+                                           // width={200}
+                                           // height={100}
+                                           resizeMode="cover"
+                                           source={{uri:category.image}}/>
+                                </TouchableOpacity>
+                                    <Text  style={{
+                                        // flex: 1,
+                                        alignSelf: 'center',
+
+                                    }}>{category.name}</Text>
+                                </View>
+                            })
+
+
+                            : false}
+
+
+
                         </ScrollView>
-                    </SafeAreaView>
         )
     }
 
@@ -108,7 +114,9 @@ class Calculator extends React.Component {
 const styles = StyleSheet.create({
     scrollView: {
         backgroundColor: 'white',
-        flex: 1
+        flex: 1,
+        justifyContent: 'flex-start',
+        alignItems: 'center',
     },
     item:{
         backgroundColor: '#2196f3',
@@ -126,4 +134,17 @@ const styles = StyleSheet.create({
 
 
 
-export default Calculator;
+
+// Map State To Props (Redux Store Passes State To Component)
+const mapStateToProps = (state) => {
+
+    // Redux Store --> Component
+    return {
+        calcCategories:state.kitReducer.calcCategories
+    };
+};
+
+
+// Exports
+export default connect(mapStateToProps)(Calculator);
+
