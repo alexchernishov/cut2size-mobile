@@ -3,7 +3,7 @@
 
 const initialState = {
     room: false,
-    calcRooms:false,
+    calcRooms:[],
     calcCategories:false,
     itemType: false,
     kitItem: false,

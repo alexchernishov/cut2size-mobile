@@ -1,13 +1,12 @@
 import React from 'react';
 import {
     StyleSheet,
-    SafeAreaView,
     View,
     Text,
     Alert,
     ScrollView,
-    Image,
-    TouchableHighlight, TouchableOpacity,
+    ImageBackground,
+    TouchableOpacity,
 } from 'react-native';
 
 import {get} from '../../api/main'
@@ -48,7 +47,6 @@ class Room extends React.Component {
                 }
             })
             .catch(err => {
-                console.log(222);
                 console.log(err);
                 let rooms = [];
                 this.setState({ rooms });
@@ -93,15 +91,23 @@ class Room extends React.Component {
 
                             }}
                             onPress={e=>this.chooseRoom(e,  item)}>
-                            <Image style={{
-                                flex: 1,
-                                alignSelf: 'stretch',
 
-                            }}
+                            <ImageBackground
+                                style={{
+                                    flex: 1,
+                                    alignSelf: 'stretch',
+                                }}
                                 // width={200}
                                 // height={100}
-                                   resizeMode="cover"
-                                   source={{uri:item.small_image}}/>
+                                resizeMode="cover"
+                                source={{uri:item.small_image}}
+                            ><View style={{
+                                flex:1,
+                                flexDirection:'row',
+
+                                backgroundColor: (typeof item.clickable !=='undefined' && item.clickable===0) ? 'rgba(117,117,117,0.5)' : 'none'
+                            }}/>
+                            </ImageBackground>
                         </TouchableOpacity>
                             {(typeof item.clickable !=='undefined' && item.clickable===0) ?
                                 <View style={{
@@ -113,7 +119,9 @@ class Room extends React.Component {
                                     justifyContent: 'center',
                                     alignItems: 'center'
                                 }}>
-                                <Text>Centered text</Text>
+                                <Text style={{
+                                    color:'#fff'
+                                }}>Coming soon</Text>
                             </View> :false}
                             <Text  style={{
                                 // flex: 1,
@@ -123,9 +131,6 @@ class Room extends React.Component {
                         </View>
                     })
                 }
-
-
-
             </ScrollView>
         )
     }
