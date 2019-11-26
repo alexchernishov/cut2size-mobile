@@ -21,11 +21,11 @@ export const getCalcRooms = (filterroom) => dispatch => {
         });
 };
 export const setKitType = (itemType) => {
-    store.dispatch(setType({itemType: itemType}));
+   return store.dispatch(setType({itemType: itemType}));
 
 };
 export const setKitItem = (kitItem) => {
-    store.dispatch(setKit({kitItem: kitItem}));
+    return store.dispatch(setKit({kitItem: kitItem}));
 };
 export const getCalcCategories = () => dispatch => {
 

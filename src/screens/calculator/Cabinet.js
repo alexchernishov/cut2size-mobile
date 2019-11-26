@@ -66,10 +66,8 @@ class Cabinet extends React.Component {
 
         let self_state = this.props.kit.calcRooms;
 
-        console.log(this.props.kit);
         return (
             <ScrollView
-
             >{ self_state.map(room => {
 
                     let Room  = roomList[room.name];

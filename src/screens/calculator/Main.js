@@ -44,13 +44,9 @@ class Calculator extends React.Component {
                 // this.props.history.push(this.props.parentRoute);
                 this.props.navigation.navigate('Room');
             }else{
-                // setKitType(this.state.selectedCategory.slug);
-                // store.dispatch(setCabinet({cabinet: false}));
-                //
-                // this.props.history.push({
-                //     pathname: this.props.parentRoute+"/options",
-                // });
-                console.warn('NOBase');
+                setKitType(this.state.selectedCategory.slug);
+                store.dispatch(setCabinet({cabinet: false}));
+                this.props.navigation.navigate('Options');
 
             }
         })
@@ -74,10 +70,7 @@ class Calculator extends React.Component {
                                 }} key={index}><TouchableOpacity
 
                                     style={{
-                                        flex: 1,
-
-                                        // alignSelf: 'stretch',
-
+                                        flex: 1
                                     }}
                                     onPress={e=>this.selectCategory(e,  category)}>
                                     <Image style={{
@@ -85,8 +78,6 @@ class Calculator extends React.Component {
                                         alignSelf: 'stretch',
 
                                     }}
-                                           // width={200}
-                                           // height={100}
                                            resizeMode="cover"
                                            source={{uri:category.image}}/>
                                 </TouchableOpacity>

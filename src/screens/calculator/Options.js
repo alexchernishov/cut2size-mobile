@@ -1,10 +1,8 @@
 import React from 'react';
 import {
     StyleSheet,
-    ScrollView,
-    View,
     TouchableOpacity,
-    Image, ImageBackground,Dimensions,
+    Image, Text,Dimensions,
     FlatList
 } from 'react-native';
 
@@ -50,6 +48,7 @@ class Options extends React.Component {
 
     setKit(e,kit){
         setKitItem(kit);
+        this.props.navigation.navigate('Specifications')
     }
 
     render() {
@@ -60,7 +59,8 @@ class Options extends React.Component {
                 numColumns={2}
                 data={this.state.kitCategory}
                 renderItem={this.renderKit}
-                />
+                ListEmptyComponent={<Text style={{alignSelf:'center'}}>Nothing found</Text>}
+            />
         )
     }
 

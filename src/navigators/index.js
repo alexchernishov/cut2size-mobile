@@ -7,6 +7,7 @@ import Calculator from '../screens/calculator/Main';
 import Room from '../screens/calculator/Room';
 import Cabinet from '../screens/calculator/Cabinet';
 import Options from '../screens/calculator/Options';
+import Specifications from '../screens/calculator/Specifications';
 
 
 
@@ -16,6 +17,7 @@ const MainNavigator = createStackNavigator({
     Room: {screen: Room},
     Cabinet: {screen: Cabinet},
     Options: {screen: Options},
+    Specifications: {screen: Specifications},
 },{
     defaultNavigationOptions:  ({navigation}) => ({
         // headerRight:  (
