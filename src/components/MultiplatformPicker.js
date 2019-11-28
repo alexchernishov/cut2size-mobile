@@ -3,7 +3,7 @@ import {
     View,
     Picker, Text,
     Platform,
-    Modal, Animated, TouchableOpacity,TouchableHighlight
+    Modal, Animated, TouchableOpacity
 } from 'react-native';
 const SUPPORTED_ORIENTATIONS = ['portrait', 'portrait-upside-down', 'landscape', 'landscape-left', 'landscape-right'];
 
@@ -29,7 +29,6 @@ export default class MultiPlatformPicker extends React.Component {
 
         };
 
-        console.log('setModalVisible',visible);
 
         // slide animation
         if (visible) {
@@ -60,10 +59,10 @@ export default class MultiPlatformPicker extends React.Component {
     }
 
     render(){
+
         return (
             Platform.OS==='ios' ?
-                <View>
-                <TouchableOpacity onPress={e=>{e.preventDefault();this.setModalVisible(true)}}><Text>{this.props.value}</Text></TouchableOpacity>
+                <TouchableOpacity style={this.props.style}  onPress={e=>{e.preventDefault();this.setModalVisible(true)}}><Text>{this.props.value}</Text>
                     <Modal
                         transparent={true}
                         animationType="none"
@@ -71,19 +70,19 @@ export default class MultiPlatformPicker extends React.Component {
                         supportedOrientations={SUPPORTED_ORIENTATIONS}
                         onRequestClose={() => {this.setModalVisible(false);}}
                     ><TouchableOpacity
-                    style={{
-                        flex: 1,
-                        alignItems: 'flex-end',
-                        flexDirection: 'row',
-                        backgroundColor: '#00000077'
-                    }}
-                    onPress={this.onPressMask}
+                        style={{
+                            flex: 1,
+                            alignItems: 'flex-end',
+                            flexDirection: 'row',
+                            backgroundColor: '#00000077'
+                        }}
+                        onPress={this.onPressMask}
                     ><Animated.View
-                        style={[{height: this.state.animatedHeight, backgroundColor:'grey'}]}
+                        style={[{height: this.state.animatedHeight, backgroundColor:'#ffffff',flex:1}]}
                     >
                         <Picker
                             selectedValue={this.props.value}
-                            style={this.props.style}
+                            style={{flex:1}}
                             onValueChange={(itemValue, itemIndex) =>
                                 this.props.onChange(this.props.name,itemValue)
                             }>
@@ -91,7 +90,7 @@ export default class MultiPlatformPicker extends React.Component {
                             )}
                         </Picker></Animated.View></TouchableOpacity>
                     </Modal>
-                </View>
+                </TouchableOpacity>
                     :
 
                     <Picker

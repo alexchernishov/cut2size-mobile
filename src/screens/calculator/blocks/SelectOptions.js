@@ -1,10 +1,10 @@
 import React from 'react';
 import {
     StyleSheet,
-    View,
-    Picker, TextInput,
-    Platform
+    View, TextInput,
+    Text
 } from 'react-native';
+import commonStyles from '../styles';
 import MultiPlatformPicker from '../../../components/MultiplatformPicker';
 
 
@@ -13,12 +13,14 @@ class SelectOptions extends React.Component {
 
 
     render(){
-        return (
-            <View style={{flexDirection:'row', alignItems:'center'}}>
-                {(this.props.values && this.props.values.length>1)?
 
+        return (
+            <View style={{flexDirection:'column', alignItems:'center'}}>
+                <View style={{flexDirection:'row'}}><Text style={commonStyles.selectTitle}>{this.props.description}</Text></View>
+                <View style={{flexDirection:'row'}}>
+                {(this.props.values && this.props.values.length>1)?
                     <MultiPlatformPicker
-                        style={{height: 50, width: 100}}
+                        style={commonStyles.selectItem}
                         onChange = {this.props.onChange}
                         values={this.props.values}
                         value={this.props.value}
@@ -32,7 +34,7 @@ class SelectOptions extends React.Component {
                         disabled={true}
                     />
 
-                }
+                }</View>
             </View>
 
         );

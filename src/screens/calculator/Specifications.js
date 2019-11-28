@@ -4,7 +4,8 @@ import {
     TouchableOpacity,
     Image, Text,
     ScrollView,
-    View
+    View,
+    SafeAreaView
 } from 'react-native';
 import {store} from '../../store/store';
 import {setCalcOptions, setKitItem, showPriceButton} from '../../actions/kit';
@@ -15,6 +16,7 @@ import {setPrice} from '../../actions/kit';
 import {addProductToCart} from '../../actions/cart';
 import DimensionsInput from './blocks/DimensionsInput';
 import SelectOptions from './blocks/SelectOptions';
+import ProductKitSelect from './blocks/ProductKitSelect';
 
 // Screen: Counter
 class Specifications extends React.Component {
@@ -257,13 +259,14 @@ class Specifications extends React.Component {
     }
 
     onOpenModal = (type,e) => {
-
+        e.preventDefault();
         store.dispatch(setPrice({price: false}));
         this.getProducts(type);
         this.setState({ modalOpen: true });
     };
 
     onCloseModal = () => {
+        console.warn('modalClose');
         this.setState({ modalOpen: false });
     };
 
@@ -271,7 +274,7 @@ class Specifications extends React.Component {
 
         return  get('/kit/api/product-attribute-values?fields=name,slug&expand=products&filter[slug]='+type )
             .then(res => {
-                let modalProducts = res.data;
+                let modalProducts = res;
                 this.setState({ modalProducts });
             })
             .catch(err => {
@@ -453,81 +456,100 @@ class Specifications extends React.Component {
         kitOptions= (kitOptions && kitOptions!== undefined) ? kitOptions : [];
         kitOptions = (kitOptions.id) ? [kitOptions] : kitOptions;
 
-        console.log();
-
         return (
-            <ScrollView contentContainerStyle={styles.container}>
-                <View style={{flex:1}}><Image
-                    style={{
-                        flex: 1,
-                        alignSelf: 'stretch',
+                <View  style={{flex:1, }}>
+                    <View style={{flex:1, }}>
+                        <Image
+                            style={{
+                                flex: 1,
+                                alignSelf: 'stretch',
+                                // width: undefined
+                            }}
 
-                    }}
-                    resizeMode="contain"
-                    source={{
-                    uri: (
-                        typeof this.props.kit.calcOptions.CB !=="undefined"
-                        && this.props.kit.calcOptions.CB!=1
-                        && this.props.kit.kitItem.cabinet_base_image)
-                        ? this.props.kit.kitItem.cabinet_base_image
-                        : this.props.kit.kitItem.big_image
-                }}/></View>
-                <View style={{flex:1, alignItems:'center'}}>
-                    {kitOptions.map((option,index)=>{
-                        let values =option.value;
-                        values =values ?  values.split(',') : false;
-                        if( option.abbreviation.trim() === 'CB'){
-                            return <View key={index}>
-                                        <Text>{option.description}</Text>
-                                        <View style={{flexDirection:'row', justifyContent:'space-between'}}>
-                                            <TouchableOpacity  onPress={e=>this.validateInput( 'CB',1)} style={[styles.radioButton,((this.state.calcOptions['CB']==1) ? styles.active : false)]}><Text>Yes</Text></TouchableOpacity>
-                                            <TouchableOpacity onPress={e=>this.validateInput('CB',0)} style={[styles.radioButton,((this.state.calcOptions['CB']!=1) ? styles.active : false)]}><Text>No</Text></TouchableOpacity>
-                                        </View>
-                                    </View>
-                        }
-                    })
-                    }
-                    {dimensions.map((type, index)=>{
+                            resizeMode={'cover'}
+                            source={{
+                                uri: (
+                                    typeof this.props.kit.calcOptions.CB !=="undefined"
+                                    && this.props.kit.calcOptions.CB!=1
+                                    && this.props.kit.kitItem.cabinet_base_image)
+                                    ? this.props.kit.kitItem.cabinet_base_image
+                                    : this.props.kit.kitItem.big_image
+                            }}/>
+                    </View>
+                <ScrollView  style={styles.scrollView} >
+                        <View style={{flex:1, alignItems:'center'}}>
+                            {kitOptions.map((option,index)=>{
+                                if( option.abbreviation.trim() === 'CB'){
+                                    return <View key={index}>
+                                                <Text>{option.description}</Text>
+                                                <View style={{flexDirection:'row', justifyContent:'space-between'}}>
+                                                    <TouchableOpacity  onPress={e=>this.validateInput( 'CB',1)} style={[styles.radioButton,((this.state.calcOptions['CB']==1) ? styles.active : false)]}><Text>Yes</Text></TouchableOpacity>
+                                                    <TouchableOpacity onPress={e=>this.validateInput('CB',0)} style={[styles.radioButton,((this.state.calcOptions['CB']!=1) ? styles.active : false)]}><Text>No</Text></TouchableOpacity>
+                                                </View>
+                                            </View>
+                                }
+                            })
+                            }
+                            {dimensions.map((type, index)=>{
 
-                        let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type] && this.props.kit.kitItem.show_attributes['show_'+type]==0) );
+                                let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type] && this.props.kit.kitItem.show_attributes['show_'+type]==0) );
 
-                        return show ?
+                                return show ?
 
-                            <DimensionsInput
-                                key={index}
-                                changeDimension = {this.changeDimension.bind(this)}
-                                validateInput = {this.validateInput.bind(this)}
-                                changeInput = {this.changeInput.bind(this)}
-                                dimension = {this.state.dimension}
-                                kit = {this.props.kit}
-                                type={type}
-                                showFields ={this.state.showFields}
-                                dim = {this.state.calcOptions[type]}
-                                in={this.state.in}
-                                errors = {this.state.errors}
-                            />
-                            : '';
-                    })}
-                    {
-                        kitOptions.map((option,index)=>{
-                            let values =option.value;
-                            values =values ?  values.split(',') :false;
-                            if(option.abbreviation.trim() !== 'CC' && option.abbreviation.trim() !== 'with_doors' && option.abbreviation.trim() !== 'CB'){
-                                return (<SelectOptions
-                                            key={index}
-                                            name={option.abbreviation}
-                                            onChange={this.validateInput}
-                                            desctription = {option.description}
-                                            values = {values}
-                                            value={this.state.calcOptions[option.abbreviation]}
-                                        />)
+                                    <DimensionsInput
+                                        key={index}
+                                        changeDimension = {this.changeDimension.bind(this)}
+                                        validateInput = {this.validateInput.bind(this)}
+                                        changeInput = {this.changeInput.bind(this)}
+                                        dimension = {this.state.dimension}
+                                        kit = {this.props.kit}
+                                        type={type}
+                                        showFields ={this.state.showFields}
+                                        dim = {this.state.calcOptions[type]}
+                                        in={this.state.in}
+                                        errors = {this.state.errors}
+                                    />
+                                    : '';
+                            })}
+                            {
+                                kitOptions.map((option,index)=>{
+                                    let values =option.value;
+                                    values =values ?  values.split(',') :false;
+                                    if(option.abbreviation.trim() !== 'CC' && option.abbreviation.trim() !== 'with_doors' && option.abbreviation.trim() !== 'CB'){
+                                        return (<SelectOptions
+                                                    key={index}
+                                                    name={option.abbreviation}
+                                                    onChange={this.validateInput}
+                                                    description = {option.description}
+                                                    values = {values}
+                                                    value={this.state.calcOptions[option.abbreviation] ?? 'Choose '+option.description}
+                                                />)
+                                    }
+
+                                })
                             }
 
-                        })
-                    }
 
+                            {(this.state.productTypes&&this.state.productTypes.length>0)&&
+                            this.state.productTypes.map((type,typeIndex)=>{
+                                let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type.slug] && this.props.kit.kitItem.show_attributes['show_'+type.slug]==0) );
+                                return( show &&
+                                    <ProductKitSelect
+                                        key={typeIndex}
+                                        type={type}
+                                        calcOptions={this.state.calcOptions}
+                                        onOpenModal = {this.onOpenModal}
+                                        onCloseModal = {this.onCloseModal}
+                                        modalOpen={this.state.modalOpen}
+                                        modalProducts={this.state.modalProducts}
+                                    />
+                                );
+                            })
+                            }
+                        </View>
+                </ScrollView>
                 </View>
-            </ScrollView>
+
         )
     }
 
@@ -536,9 +558,8 @@ class Specifications extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    container: {
+    scrollView: {
         flex:1,
-        flexDirection:'column',
         // alignItems:'center'
         backgroundColor:'#f5f5f5'
     },
