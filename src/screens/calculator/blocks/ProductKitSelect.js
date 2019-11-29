@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-    Modal,
+  Modal,
     View,
     Text,
     TouchableOpacity,
@@ -8,70 +8,68 @@ import {
     FlatList, Image, Dimensions,
 } from 'react-native';
 import commonStyles from '../styles';
+import {setPrice} from '../../../actions/kit';
+import {store} from '../../../store/store';
 
 const window = Dimensions.get('window');
 
 
 class ProductKitSelect extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.getProductList = this.getProductList.bind(this);
+    }
 
-    render(){
-       let type = this.props.type;
-       console.log(this.props.modalProducts);
+    getProductList = (e, slug) => {
+        e.preventDefault();
+        this.props.getProducts(slug).then(res => {
+            let modalProducts = res;
+
+            store.dispatch(setPrice({price: false}));
+            this.props.navigation.navigate('ProductList', {
+                modalProducts: modalProducts,
+                onPress: this.props.chooseMaterial
+            });
+        })
+            .catch(err => {
+                console.log(err);
+                let modalProducts = [];
+                this.setState({ modalProducts });
+                if (err.response) {
+                    if(err.response.status === 401){
+                        // window.location.href = '/login'
+                    }
+                }
+            });
+
+    };
+
+
+    render() {
+        let type = this.props.type;
         return (
-            <React.Fragment>
-            <View style={{flexDirection:'column', alignItems:'center'}}>
-                <View style={{flexDirection:'row', alignItems:'center'}}><Text style={commonStyles.selectTitle}>{type.name}</Text></View>
-                <View  style={{flexDirection:'row', alignItems:'center'}} ><TouchableOpacity onPress={e=>this.props.onOpenModal(type,e)} style={commonStyles.selectItem} disabled={type.disabled}>{this.props.calcOptions.materials[type.slug] ? this.props.calcOptions.materials[type.slug].name  : <Text>Default</Text>}</TouchableOpacity></View>
-            </View>
-                <Modal
-                    style={{backgroundColor: '#fff'}}
-                    transparent={true}
-                     visible={this.props.modalOpen}
-                     onRequestClose={this.props.onCloseModal}
-                    center>
+            <View style={{flexDirection: 'column', alignItems: 'center'}}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}><Text
+                    style={commonStyles.selectTitle}>{type.name}</Text></View>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
                     <TouchableOpacity
-                        style={{
-                            flex: 1,
-                            backgroundColor: '#00000077'
-                        }}
-                        onPress={this.props.onCloseModal}>
-                        <FlatList
-                            contentContainerStyle={styles.container}
-                            keyExtractor={(_, index) => index}
-                            numColumns={2}
-                            data={this.props.modalProducts}
-                            renderItem={this.renderItem}
-                            ListEmptyComponent={<Text style={{alignSelf:'center'}}>Nothing found</Text>}
-                        />
+                    onPress={e => this.getProductList(e, type.slug)} style={commonStyles.selectItem}
+                    disabled={type.disabled}>{
+                        this.props.calcOptions.materials[type.slug] ? <Text>{this.props.calcOptions.materials[type.slug].name}</Text> :
+                    <Text>Default</Text>}
                     </TouchableOpacity>
-                </Modal>
-            </React.Fragment>
+                </View>
+            </View>
+
         );
     };
 
-    renderItem=(item)=>{
-        item = item.item;
-        return <TouchableOpacity  >
-            <Image   style={{
-                width:window.width/2,
-                height:window.width/2,
-            }}
-                     resizeMode="contain"
-                     source={{uri:item.image}} />
-        </TouchableOpacity>
-    }
 }
-
-
-class ProductModal extends React.Component {
-
-}
-
 
 const styles = StyleSheet.create({
     container: {
-        // flex: 1,
+        flex: 1,
         flexDirection: 'column',
         // height: '100%',
         // width: '100%'

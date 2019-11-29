@@ -35,6 +35,8 @@ class Specifications extends React.Component {
         this.onOpenModal= this.onOpenModal.bind(this);
         this.onCloseModal= this.onCloseModal.bind(this);
         this.validateInput= this.validateInput.bind(this);
+        this.getProducts= this.getProducts.bind(this);
+        this.chooseMaterial= this.chooseMaterial.bind(this);
     }
 
 
@@ -262,7 +264,6 @@ class Specifications extends React.Component {
         e.preventDefault();
         store.dispatch(setPrice({price: false}));
         this.getProducts(type);
-        this.setState({ modalOpen: true });
     };
 
     onCloseModal = () => {
@@ -272,21 +273,8 @@ class Specifications extends React.Component {
 
     getProducts(type){
 
-        return  get('/kit/api/product-attribute-values?fields=name,slug&expand=products&filter[slug]='+type )
-            .then(res => {
-                let modalProducts = res;
-                this.setState({ modalProducts });
-            })
-            .catch(err => {
-                console.log(err);
-                let modalProducts = [];
-                this.setState({ modalProducts });
-                if (err.response) {
-                    if(err.response.status === 401){
-                        // window.location.href = '/login'
-                    }
-                }
-            });
+        return  get('calc','/kit/api/product-attribute-values?fields=name,slug&expand=products&filter[slug]='+type )
+
     }
 
 
@@ -324,7 +312,6 @@ class Specifications extends React.Component {
         let withDoorsTypes = ['exterior_material', 'door_material'];
         let FrontLogicTypes = ['door_style', 'drawer_style'];
         let noFrontsTypes = ['door_material','door_style', 'drawer_style'];
-
 
         if(this.props.kit.kitItem.change_main_image && this.props.kit.kitItem.change_main_image===1){
             let kitItem = this.props.kit.kitItem;
@@ -389,7 +376,7 @@ class Specifications extends React.Component {
 
 
         }
-        this.setState({ calcOptions: calcOptionsState, modalOpen: false });
+        this.setState({ calcOptions: calcOptionsState});
         store.dispatch(setCalcOptions(calcOptionsState));
     }
     getPrice(e){
@@ -539,9 +526,12 @@ class Specifications extends React.Component {
                                         type={type}
                                         calcOptions={this.state.calcOptions}
                                         onOpenModal = {this.onOpenModal}
+                                        getProducts = {this.getProducts}
                                         onCloseModal = {this.onCloseModal}
                                         modalOpen={this.state.modalOpen}
                                         modalProducts={this.state.modalProducts}
+                                        navigation={this.props.navigation}
+                                        chooseMaterial={this.chooseMaterial}
                                     />
                                 );
                             })
