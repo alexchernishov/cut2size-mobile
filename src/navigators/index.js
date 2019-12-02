@@ -23,6 +23,7 @@ const MainNavigator = createStackNavigator({
     Options: {screen: Options},
     Specifications: {screen: Specifications},
     ProductList: {screen: ProductList},
+    Auth: AuthStack,
 },{
     defaultNavigationOptions:  ({navigation}) => ({
          headerRight:  (
@@ -39,7 +40,6 @@ const  SwitchNavigator  = createAppContainer(
     createSwitchNavigator(
         {
             App: MainNavigator,
-            Auth: AuthStack,
         },
         {
             initialRouteName: 'App',

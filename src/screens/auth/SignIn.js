@@ -44,11 +44,8 @@ class SignInScreen extends React.Component {
 
                 const decoded = jwt_decode(result.token);
                 store.dispatch(setCurrentCustomer(decoded));
-                console.log(decoded);
                 this.props.setToken(result.token);
-                console.log( this.props.navigation);
-                console.log( this.props.navigation.goBack);
-                this.props.navigation.goBack();
+                this.props.navigation.goBack(null);
             }
         });
 
