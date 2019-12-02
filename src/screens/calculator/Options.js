@@ -3,7 +3,9 @@ import {
     StyleSheet,
     TouchableOpacity,
     Image, Text,Dimensions,
-    FlatList
+    FlatList,
+    View,
+    ActivityIndicator
 } from 'react-native';
 
 import { connect } from 'react-redux';
@@ -17,6 +19,7 @@ class Options extends React.Component {
 
     state = {
         kitCategory: [],
+        loading: false,
     };
 
     componentDidMount(){
@@ -29,15 +32,19 @@ class Options extends React.Component {
     getKits(){
         let roomFilter  = (this.props.calcRooms && this.props.calcRooms[0]) ? '&filter[room_id]='+this.props.calcRooms[0].id  : '';
         let url = '/kit/api/kit?expand=kits&filter[alias]='+this.props.itemType+roomFilter;
+        this.setState({ loading: true });
         get('calc',url )
             .then(res => {
                 let kitCategory = res;
-                this.setState({ kitCategory });
+                this.setState({
+                    kitCategory,
+                    loading: false,
+                });
             })
             .catch(err => {
                 console.log(err);
                 let kitCategory = [];
-                this.setState({ kitCategory });
+                this.setState({ kitCategory,loading: false, });
                 if (err.response) {
                     if(err.response.status === 401){
                         // window.location.href = '/login'
@@ -59,10 +66,27 @@ class Options extends React.Component {
                 numColumns={2}
                 data={this.state.kitCategory}
                 renderItem={this.renderKit}
+                ListFooterComponent={this.renderFooter}
                 ListEmptyComponent={<Text style={{alignSelf:'center'}}>Nothing found</Text>}
             />
         )
     }
+
+    renderFooter = () => {
+        if (!this.state.loading) return null;
+
+        return (
+            <View
+                style={{
+                    paddingVertical: 20,
+                    borderTopWidth: 1,
+                    borderColor: "#CED0CE"
+                }}
+            >
+                <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
 
     renderKit=(item)=>{
         item = item.item;

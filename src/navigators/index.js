@@ -9,7 +9,10 @@ import Cabinet from '../screens/calculator/Cabinet';
 import Options from '../screens/calculator/Options';
 import Specifications from '../screens/calculator/Specifications';
 import ProductList from '../screens/calculator/ProductList';
+import SignInScreen from '../screens/auth/SignIn';
+import Logout from '../screens/auth/Logout';
 
+const AuthStack = createStackNavigator({ SignIn: SignInScreen });
 
 
 const MainNavigator = createStackNavigator({
@@ -22,13 +25,11 @@ const MainNavigator = createStackNavigator({
     ProductList: {screen: ProductList},
 },{
     defaultNavigationOptions:  ({navigation}) => ({
-        // headerRight:  (
-        //     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-        //         <TouchableOpacity onPress={() =>  navigation.navigate('Calculator')}  >
-        //             <Text>Calculator</Text>
-        //         </TouchableOpacity>
-        //     </View>
-        // ),
+         headerRight:  (
+             <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                 <Logout navigation={navigation}/>
+             </View>
+         ),
     }),
     initialRouteName: 'Calculator',
 
@@ -38,6 +39,7 @@ const  SwitchNavigator  = createAppContainer(
     createSwitchNavigator(
         {
             App: MainNavigator,
+            Auth: AuthStack,
         },
         {
             initialRouteName: 'App',

@@ -5,7 +5,7 @@ import {
     Image, Text,
     ScrollView,
     View,
-    SafeAreaView
+    SafeAreaView, TextInput,
 } from 'react-native';
 import {store} from '../../store/store';
 import {setCalcOptions, setKitItem, showPriceButton} from '../../actions/kit';
@@ -17,6 +17,8 @@ import {addProductToCart} from '../../actions/cart';
 import DimensionsInput from './blocks/DimensionsInput';
 import SelectOptions from './blocks/SelectOptions';
 import ProductKitSelect from './blocks/ProductKitSelect';
+import commonStyles from './styles';
+import { CURRENCY_SYMBOL } from 'react-native-dotenv';
 
 // Screen: Counter
 class Specifications extends React.Component {
@@ -55,7 +57,7 @@ class Specifications extends React.Component {
             width:false,
             depth:false,
             materials:{} ,
-            quantity:1,
+            quantity:'1',
             comment:null,
             CB:true,
         };
@@ -80,7 +82,10 @@ class Specifications extends React.Component {
             modalOpen: false,
             modalProducts: [],
             calcOptions :calcOptionsState,
-            errors:{},
+            errors:{
+                quantity:false,
+                comment:false,
+            },
             in: {
                 height: ["1","1","1"],
                 width:["1","1","1"],
@@ -101,25 +106,22 @@ class Specifications extends React.Component {
 
 
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+
+        console.log(this.state,prevState);
         if( JSON.stringify(this.state) !== JSON.stringify(prevState) ){
             this.checkInputs(this.state);
         }
     }
 
-    componentDidMount(){
-    }
-
-
-
     componentWillUnmount(){
 
-        let initialState = this.getInitialState();
-        initialState.calcOptions.materials = this.state.calcOptions.materials;
-
-        let calcOptions = initialState.calcOptions;
-        this.setState({calcOptions:calcOptions});
-        store.dispatch(showPriceButton(false));
-        store.dispatch(setPrice({price: false}));
+        // let initialState = this.getInitialState();
+        // initialState.calcOptions.materials = this.state.calcOptions.materials;
+        //
+        // let calcOptions = initialState.calcOptions;
+        // this.setState({calcOptions:calcOptions});
+        // store.dispatch(showPriceButton(false));
+        // store.dispatch(setPrice({price: false}));
     }
 
 
@@ -177,41 +179,9 @@ class Specifications extends React.Component {
 
 
     changeInput(name,value,inch=false, min,max, type=false){
-        let calcOptionsState ={...this.state.calcOptions};
-        if(type !== 'number'){
-            calcOptionsState[name] = value;
-            this.setState({ calcOptions: calcOptionsState});
-            store.dispatch(setCalcOptions(calcOptionsState));
-            return;
-        }
-        store.dispatch(setPrice({price: false}));
-
-
-
-        if(inch){
-            let inState = this.state.in;
-
-            inState[name][inch-1] = value;
-            this.setState({ in: inState });
-
-            let mmVal = this.convertFromInchState(inState[name]);
-            if(!isNaN(mmVal)){
-
-                value = parseInt(mmVal);
-
-            }
-        }
-        // if (input.classList)
-        //     input.classList.remove('isInvalid');
-        // else
-        //     input.className = input.className.replace(new RegExp('(^|\\b)' + 'isInvalid'.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');
-
-        calcOptionsState[name] = value;
-        this.setState({ calcOptions: calcOptionsState});
-        store.dispatch(setCalcOptions(calcOptionsState));
+        this.validateInput(name,value,inch, false,false, type);
     }
     validateInput(name,value,inch=false, min,max, type){
-
         let calcOptionsState ={...this.state.calcOptions};
         if(type !== 'number'){
             calcOptionsState[name] = value;
@@ -232,13 +202,13 @@ class Specifications extends React.Component {
             }
         }
 
-        if(value > max || value < min){
+        if((min && max)&&(value > max || value < min )){
 
 
-            calcOptionsState[name] = false;
+            calcOptionsState[name] = '';
 
             let errors = {};
-            errors[name] = 'Dimension must be between '+ min+' and '+max+ ' mm';
+            errors[name] = name+' must be between '+ min+' and '+max;
 
             this.setState({ calcOptions: calcOptionsState, errors:errors});
 
@@ -390,11 +360,11 @@ class Specifications extends React.Component {
             postData
         )
             .then(res => {
-                store.dispatch(setPrice({price: res.data}));
+                store.dispatch(setPrice({price: res}));
             })
             .catch(err => {
                 console.log(err);
-
+                store.dispatch(setPrice({price: false}));
             });
 
 
@@ -444,7 +414,7 @@ class Specifications extends React.Component {
         kitOptions = (kitOptions.id) ? [kitOptions] : kitOptions;
 
         return (
-                <View  style={{flex:1, }}>
+                <View  style={{flex:1,paddingBottom:30 }}>
                     <View style={{flex:1, }}>
                         <Image
                             style={{
@@ -481,8 +451,7 @@ class Specifications extends React.Component {
 
                                 let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type] && this.props.kit.kitItem.show_attributes['show_'+type]==0) );
 
-                                return show ?
-
+                                return show  &&
                                     <DimensionsInput
                                         key={index}
                                         changeDimension = {this.changeDimension.bind(this)}
@@ -496,7 +465,6 @@ class Specifications extends React.Component {
                                         in={this.state.in}
                                         errors = {this.state.errors}
                                     />
-                                    : '';
                             })}
                             {
                                 kitOptions.map((option,index)=>{
@@ -536,6 +504,72 @@ class Specifications extends React.Component {
                                 );
                             })
                             }
+
+                            <View style={styles.inputContainer}>
+                                    <TextInput
+                                        name={'quantity'}
+                                        placeholder = {this.state.errors['quantity'] ?this.state.errors['quantity'] :'Quantity'}
+                                        placeholderTextColor = {this.state.errors['quantity'] ? "#ff7584" :"#3492f4"}
+                                        autoCapitalize = "none"
+                                        value={this.state.calcOptions.quantity}
+                                        multiline={false}
+                                        onChangeText={value=>this.validateInput('quantity',value,false,1,1000,'number')}
+                                        blurOnSubmit={true}
+                                        keyboardType={'numeric'}
+                                        style={[commonStyles.input]}
+                                    />
+                            </View>
+                            <View style={styles.inputContainer}>
+                                    <TextInput
+                                        name={'comment'}
+                                        placeholder = {this.state.errors['comment'] ?this.state.errors['comment'] :'Add comment'}
+                                        placeholderTextColor = {this.state.errors['comment'] ? "#ff7584" :"#3492f4"}
+                                        autoCapitalize = "none"
+                                        value={this.state.calcOptions.comment}
+                                        multiline={true}
+                                        numberOfLines={3}
+                                        onChangeText={value=>this.validateInput('comment',value,false,1,1000,'text')}
+                                        blurOnSubmit={true}
+                                        style={[commonStyles.input]}
+                                    />
+                            </View>
+                            <View style={[styles.inputContainer,commonStyles.rowMargin]}>
+                                <View style={{flexDirection:'column', alignItems:'center'}}>
+                                    {this.props.kit.price&&
+                                    <View  style={{flexDirection:'row', alignItems:'center', marginTop:15, marginBottom:15}}>
+                                        <Text >Price/PC: </Text>
+                                        <Text style={{fontWeight:'bold'}}>{CURRENCY_SYMBOL} </Text>
+                                        <Text>{this.props.kit.price}</Text>
+                                    </View>
+                                    }
+                                    <View style={{flexDirection:'row'}}>
+                                    <TouchableOpacity
+                                            onPress={e=>this.clearAllInputs(e)}
+                                            style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Clear</Text></TouchableOpacity>
+                                        {this.props.kit.price?
+                                            <TouchableOpacity
+                                                onPress={e=>this.getPrice(e)}
+                                                style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Add to Cart</Text></TouchableOpacity>
+                                            :
+                                            this.props.kit.showPriceButton &&
+                                            (
+                                                this.props.isCustomerAuthenticated ?
+                                                    <TouchableOpacity
+                                                        onPress={e=>this.getPrice(e)}
+                                                        style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Get price</Text></TouchableOpacity>
+                                                    :
+                                                    <TouchableOpacity
+                                                        onPress={e=>this.props.navigation.navigate('Auth')}
+                                                        style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Sign in to get a price</Text></TouchableOpacity>
+                                            )
+
+
+                                        }
+                                    </View>
+                                </View>
+
+                            </View>
+
                         </View>
                 </ScrollView>
                 </View>
@@ -561,6 +595,12 @@ const styles = StyleSheet.create({
     active:{
         backgroundColor:'#acb5bc',
     },
+    inputContainer:{
+        flex:1,
+        flexDirection:'row',
+        alignItems:'center'
+    },
+
 
 });
 
@@ -573,7 +613,7 @@ const mapStateToProps = (state) => {
     // Redux Store --> Component
     return {
         kit:state.kitReducer,
-
+        isCustomerAuthenticated:state.authReducer.isCustomerAuthenticated,
     };
 };
 

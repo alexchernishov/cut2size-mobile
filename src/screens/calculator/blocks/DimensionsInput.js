@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/AntDesign';
+import commonStyles from '../styles';
 
 
 class DimensionsInput extends React.Component {
@@ -23,13 +24,12 @@ class DimensionsInput extends React.Component {
                     placeholderTextColor = {this.props.errors[this.props.type] ? "#ff7584" :"#3492f4"}
                     autoCapitalize = "none"
                     value={this.props.dim ? this.props.dim : ''}
-                    multiline={true}
-                    numberOfLines={4}
+                    multiline={false}
                     onChangeText={value => this.props.changeInput(this.props.type,value, false,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                     onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, false, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                     blurOnSubmit={true}
                     keyboardType={'numeric'}
-                    style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                    style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                 />:
                     <View style={{ flex:0.8,flexDirection:'row'}}>
@@ -39,13 +39,12 @@ class DimensionsInput extends React.Component {
                             placeholderTextColor = {this.props.errors[this.props.type] ? "#ff7584" :"#3492f4"}
                             autoCapitalize = "none"
                             value={this.props.in[this.props.type][0]}
-                            multiline={true}
-                            numberOfLines={4}
+                            multiline={false}
                             onChangeText={value => this.props.changeInput(this.props.type,value, 1,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 1, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
-                            style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                            style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                         />
                         <TextInput
@@ -54,13 +53,12 @@ class DimensionsInput extends React.Component {
                             placeholderTextColor = {this.props.errors[this.props.type] ? "#ff7584" :"#3492f4"}
                             autoCapitalize = "none"
                             value={this.props.in[this.props.type][1]}
-                            multiline={true}
-                            numberOfLines={4}
+                            multiline={false}
                             onChangeText={value => this.props.changeInput(this.props.type,value, 2,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 2, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
-                            style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                            style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                         />
                         <TextInput
@@ -69,13 +67,12 @@ class DimensionsInput extends React.Component {
                             placeholderTextColor = {this.props.errors[this.props.type] ? "#ff7584" :"#3492f4"}
                             autoCapitalize = "none"
                             value={this.props.in[this.props.type][2]}
-                            multiline={true}
-                            numberOfLines={4}
+                            multiline={false}
                             onChangeText={value => this.props.changeInput(this.props.type,value, 3,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 3, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
-                            style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                            style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                         />
                     </View>
@@ -90,18 +87,7 @@ class DimensionsInput extends React.Component {
 
 
 const styles = StyleSheet.create({
-    input: {
-        flex:0.9,
-        // flexDirection:'row',
-        // height:'auto'
-        textAlign:'center',
-        backgroundColor:'#fff',
-        marginBottom:5,
-        marginTop:5,
-        padding:10,
-        color:'#000'
 
-    },
     inchInput:{
         flex:0.9,
         marginLeft:2,

@@ -18,9 +18,14 @@ export const postForm = (type='API',url,params, token=false) => {
     }
 
 
-
+        console.log(apiUrl+url);
     return fetch(apiUrl+url,config)
-        .then((response) => response.json())
+        .then((response) => {
+            if(response && response.status===404){
+                return {error:'Not found'}
+            }
+            return response.json()
+        })
         .then((responseJson) => {
             return responseJson;
         })
