@@ -19,6 +19,7 @@ import SelectOptions from './blocks/SelectOptions';
 import ProductKitSelect from './blocks/ProductKitSelect';
 import commonStyles from './styles';
 import { CURRENCY_SYMBOL } from 'react-native-dotenv';
+import MainButton from '../../components/MainButton';
 
 // Screen: Counter
 class Specifications extends React.Component {
@@ -107,7 +108,6 @@ class Specifications extends React.Component {
 
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
 
-        console.log(this.state,prevState);
         if( JSON.stringify(this.state) !== JSON.stringify(prevState) ){
             this.checkInputs(this.state);
         }
@@ -385,7 +385,7 @@ class Specifications extends React.Component {
         store.dispatch(addProductToCart(product, fields.quantity));
         store.dispatch(setPrice({price: false}));
         if(!this.props.kit.kitItem.show_in_specs || this.props.kit.kitItem.show_in_specs!==1){
-            // this.props.history.push(this.props.parentRoute+'/options');
+            this.props.navigation.navigate('Options');
         }else{
             let calcOptionsState ={...this.state.calcOptions};
 
@@ -548,19 +548,17 @@ class Specifications extends React.Component {
                                             style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Clear</Text></TouchableOpacity>
                                         {this.props.kit.price?
                                             <TouchableOpacity
-                                                onPress={e=>this.getPrice(e)}
+                                                onPress={e=>this.addToCart(e)}
                                                 style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Add to Cart</Text></TouchableOpacity>
                                             :
                                             this.props.kit.showPriceButton &&
                                             (
                                                 this.props.isCustomerAuthenticated ?
-                                                    <TouchableOpacity
-                                                        onPress={e=>this.getPrice(e)}
-                                                        style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Get price</Text></TouchableOpacity>
+                                                    <MainButton
+                                                        onPress={e=>this.getPrice(e)}>Get price</MainButton>
                                                     :
-                                                    <TouchableOpacity
-                                                        onPress={e=>this.props.navigation.navigate('Auth')}
-                                                        style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite]}>Sign in to get a price</Text></TouchableOpacity>
+                                                    <MainButton
+                                                        onPress={e=>this.props.navigation.navigate('Auth')}>Sign in to get a price</MainButton>
                                             )
 
 
@@ -584,7 +582,6 @@ class Specifications extends React.Component {
 const styles = StyleSheet.create({
     scrollView: {
         flex:1,
-        // alignItems:'center'
         backgroundColor:'#f5f5f5'
     },
     radioButton:{

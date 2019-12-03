@@ -2,12 +2,10 @@
 import {store} from "../store/store";
 import {filterKeys} from "../functions/main";
 
-export const setCartProducts = () => {
 
-    let cart_products = false;
-    if(typeof(Storage) !== "undefined"){
-        cart_products = JSON.parse(localStorage.getItem('cart_products'));
-    }
+
+export const setCartProducts = (cart_products) => {
+
 
     let total = 0;
     let quantityTotal = 0;
@@ -21,7 +19,6 @@ export const setCartProducts = () => {
         );
     }
 
-
     return {
         type: 'SET_CART_PRODUCTS',
         payload: {products:cart_products,quantityTotal:quantityTotal,total:total}
@@ -30,10 +27,7 @@ export const setCartProducts = () => {
 
 
 export const deleteProduct = (id) => {
-    let cart_products = false;
-    if(typeof(Storage) !== "undefined"){
-        cart_products = JSON.parse(localStorage.getItem('cart_products'));
-    }
+    let cart_products =store.getState().cartReducer.products;
     for(let i in cart_products){
         if(cart_products[i].id === id){
             cart_products.splice( i, 1 );
@@ -41,24 +35,19 @@ export const deleteProduct = (id) => {
         }
     }
 
-    localStorage.setItem('cart_products', JSON.stringify(cart_products));
-    return store.dispatch(setCartProducts());
+    return store.dispatch(setCartProducts(cart_products));
 
 };
 
 export const clearCart = () => {
-    if(typeof(localStorage) !== "undefined"){
-        localStorage.removeItem('cart_products');
-    }
+
     return store.dispatch(setCartProducts());
 
 };
 
 export const setQuantity = (id,quantity) => {
-    let cart_products = false;
-    if(typeof(Storage) !== "undefined"){
-        cart_products = JSON.parse(localStorage.getItem('cart_products'));
-    }
+    let cart_products =store.getState().cartReducer.products;
+
     for(let i in cart_products){
         if(cart_products[i].id === id){
 
@@ -71,25 +60,20 @@ export const setQuantity = (id,quantity) => {
         }
     }
 
-    localStorage.setItem('cart_products', JSON.stringify(cart_products));
-    return store.dispatch(setCartProducts());
+    return store.dispatch(setCartProducts(cart_products));
 
 };
 
 export const addProductToCart = (product, quantity) => {
 
-    let cart_products = false;
-    if(typeof(Storage) !== "undefined"){
-        cart_products = JSON.parse(localStorage.getItem('cart_products'));
-    }
-    if(typeof cart_products == 'undefined' || cart_products ==null){
-        cart_products = [];
-    }
+
+    let cart_products =store.getState().cartReducer.products;
+    cart_products = cart_products ? cart_products : [];
 
 
     let exist = false;
     for(let i in cart_products){
-        if(cart_products[i].id === product.id){
+        if(cart_products[i].id === product.id && (product.kit && cart_products[i].kit)){
             cart_products[i].quantity += quantity;
             exist = true;
             break;
@@ -106,6 +90,5 @@ export const addProductToCart = (product, quantity) => {
         cart_products.push(product);
     }
 
-    localStorage.setItem('cart_products', JSON.stringify(cart_products));
-    return store.dispatch(setCartProducts());
+    return store.dispatch(setCartProducts(cart_products));
 };

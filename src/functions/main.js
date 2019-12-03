@@ -243,3 +243,8 @@ export const arrayObjKeyExists = (array,key) => {
     });
     return res;
 };
+
+
+export const formatPrice=(price) =>{
+    return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+}

@@ -20,11 +20,12 @@ const persistConfig = {
     // Whitelist (Save Specific Reducers)
     whitelist: [
         'authReducer',
-        // 'kitReducer',
+        'kitReducer',
+        'cartReducer',
     ],
     // Blacklist (Don't Save Specific Reducers)
     blacklist: [
-        'counterReducer',
+        // 'counterReducer',
     ],
 };
 

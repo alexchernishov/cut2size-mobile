@@ -1,9 +1,11 @@
 // Imports: Dependencies
 import React from 'react';
-import { Button, StyleSheet} from 'react-native';
+import {Button, StyleSheet, TouchableOpacity} from 'react-native';
 import { connect } from 'react-redux';
 import logoutAction from './logoutAction';
 import {setCurrentCustomer, setToken} from '../../actions/authentication';
+import {Icon} from 'react-native-elements';
+import {clearCart} from '../../actions/cart';
 
 // Screen Dimensions
 
@@ -19,11 +21,9 @@ class Logout extends React.Component {
     render() {
         return (
             this.props.isCustomerAuthenticated &&
-            <Button
-                onPress={e=>this.logout(e)}
-                title="Logout"
-                color="#000"
-            />
+            <TouchableOpacity onPress={e=>this.logout(e)} style={{marginRight:10}} >
+                <Icon name='logout' type={'antdesign'} size={20} style={{paddingHorizontal: 10}}/>
+            </TouchableOpacity>
 
         )
     }
@@ -36,6 +36,7 @@ const mapDispatchToProps = (dispatch) => {
     return {
         setToken: (token) => dispatch(setToken(token)),
         setCurrentCustomer: (token) => dispatch(setCurrentCustomer(token)),
+        clearCart: (token) => dispatch(clearCart({})),
 
     };
 };

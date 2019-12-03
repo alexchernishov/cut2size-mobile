@@ -11,6 +11,9 @@ import Specifications from '../screens/calculator/Specifications';
 import ProductList from '../screens/calculator/ProductList';
 import SignInScreen from '../screens/auth/SignIn';
 import Logout from '../screens/auth/Logout';
+import Cart from '../screens/cart/Cart';
+import Checkout from '../screens/checkout/Checkout';
+import CartIcon from '../components/cart/CartIcon';
 
 const AuthStack = createStackNavigator({ SignIn: SignInScreen });
 
@@ -24,10 +27,13 @@ const MainNavigator = createStackNavigator({
     Specifications: {screen: Specifications},
     ProductList: {screen: ProductList},
     Auth: AuthStack,
+    Cart: Cart,
+    Checkout: Checkout,
 },{
     defaultNavigationOptions:  ({navigation}) => ({
          headerRight:  (
              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                 <CartIcon navigation={navigation}/>
                  <Logout navigation={navigation}/>
              </View>
          ),
