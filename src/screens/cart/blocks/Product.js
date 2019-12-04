@@ -1,11 +1,12 @@
 import React from 'react';
-import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View,Animated} from 'react-native';
 import {Icon} from 'react-native-elements';
 import {deleteProduct, setQuantity} from '../../../actions/cart';
 import {store} from '../../../store/store';
 import QuantityInput from '../../../components/cart/quantityInput';
 import PriceItem from '../../../components/cart/PriceItem';
 import TotalPriceItem from '../../../components/cart/TotalPriceItem';
+import {formatName} from '../../../functions/main';
 
 class Product extends React.Component{
 
@@ -13,7 +14,8 @@ class Product extends React.Component{
     constructor(props) {
         super(props);
         this.state={
-            showOptions:false
+            showOptions:false,
+            collapseHeight: new Animated.Value(0),
         };
         this.setProductQuantity = this.setProductQuantity.bind(this);
     }
@@ -31,12 +33,36 @@ class Product extends React.Component{
         store.dispatch(deleteProduct(id));
     }
 
+    toogleCollapse(e){
+        e.preventDefault();
+
+        const {height, duration} = {
+            height: this.state.showOptions ? 0 : 400,
+            duration:200,
+
+        };
+
+        return Animated.timing(
+            this.state.collapseHeight,
+            {
+                toValue: height,
+                duration: duration
+            }
+        ).start(() => {
+            this.setState({showOptions : !this.state.showOptions})
+        });
+    }
+
     render() {
         let item = this.props.item;
         return  <View
                         style={styles.container}>
                         <View style={styles.rowContainer}>
-
+                            <TouchableOpacity
+                                style={[styles.rowItem,{justifyContent:'center', flexDirection:'row'}]}
+                                onPress={e=>this.deleteItem(e,item.id)}>
+                                <Icon   onPress={e=>this.deleteItem(e,item.id)}  style={{textAlign:'center'}} name='close' size={30} color={'red'} />
+                            </TouchableOpacity>
                             <Image style={[{
                                 height:100,
                                 width:null
@@ -45,7 +71,7 @@ class Product extends React.Component{
                             <TouchableOpacity
                                 style={[styles.rowItem,{justifyContent:'center', flexDirection:'row'}]}
                                 onPress={e=>this.deleteItem(e,item.id)}>
-                                <Icon   onPress={e=>this.deleteItem(e,item.id)}  style={{textAlign:'center'}} name='close' size={30} color={'red'} />
+                                <Icon   onPress={e=>this.toogleCollapse(e)}  style={{textAlign:'center'}}  name='menu' size={30} color={'black'} />
                             </TouchableOpacity>
                         </View>
 
@@ -64,16 +90,56 @@ class Product extends React.Component{
                                 style={[styles.mainInputContainer,styles.rowItem]}
                             />
                         </View>
-                         {this.state.showOptions &&
-                                             <View>
-                                                 <Text>111</Text>
-                                             </View>
-                         }
+                            <Animated.View
+                                style={{
+                                    height:this.state.collapseHeight,
+                                    backgroundColor: '#e1e1e1',
+                                    flexDirection:'column',
+                                    flexWrap: 'wrap',
+                                }}>
+                                {Object.keys(item.fields).map((name,index)=>{
+                                    let value  =item.fields[name];
+
+                                    let nameFormated  = formatName(name);
+                                    return (
+                                        (value && typeof value == 'object')?
+                                            Object.keys(value).map((nameVal,indexVal)=>{
+                                                let valueObj  =value[nameVal];
+                                                let nameFormated  = formatName(nameVal);
+                                                return (
+                                                    <CartOptionItem
+                                                        key={indexVal}
+                                                        name={nameFormated}
+                                                        value={valueObj.name ? valueObj.name : valueObj}
+                                                    />
+                                                )
+                                            })
+                                            :
+                                            <CartOptionItem
+                                                key={index}
+                                                name={nameFormated}
+                                                value={value}
+                                            />
+                                    )
+                                })
+                                }
+                            </Animated.View>
+
                     </View>
     }
 
+
+
 }
 
+export class CartOptionItem extends React.Component{
+    render(){
+        return  (this.props.value&& this.props.value!=='') ? <View style={styles.optionItem}>
+                    <Text style={{fontWeight:'bold'}}>{this.props.name.trim()}: </Text>
+                    <Text>{this.props.value.toString().trim()}</Text>
+                </View> : null;
+    }
+}
 
 const styles = StyleSheet.create({
     container: {
@@ -106,7 +172,11 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center',
         flex:1,
-        flexWrap:'wrap'
+        flexWrap:'wrap',
+    },
+    optionItem:{
+        flexDirection:'row',
+        flex:1
     }
 });
 

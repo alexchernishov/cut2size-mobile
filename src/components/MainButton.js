@@ -9,7 +9,7 @@ class MainButton extends React.Component{
     render() {
         return      <TouchableOpacity
             onPress={this.props.onPress}
-            style={[commonStyles.button,commonStyles.columnMargin]}><Text style={[commonStyles.colorWhite,{textAlign:'center'}]}>{this.props.children}</Text>
+            style={[commonStyles.button,commonStyles.columnMargin,this.props.styles]}><Text style={[commonStyles.colorWhite,{textAlign:'center'}]}>{this.props.children}</Text>
         </TouchableOpacity>
 
     }

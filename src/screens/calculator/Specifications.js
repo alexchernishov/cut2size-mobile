@@ -20,6 +20,7 @@ import ProductKitSelect from './blocks/ProductKitSelect';
 import commonStyles from './styles';
 import { CURRENCY_SYMBOL } from 'react-native-dotenv';
 import MainButton from '../../components/MainButton';
+import {InputContainer} from '../../components/views/InputContainer';
 
 // Screen: Counter
 class Specifications extends React.Component {
@@ -181,7 +182,7 @@ class Specifications extends React.Component {
     changeInput(name,value,inch=false, min,max, type=false){
         this.validateInput(name,value,inch, false,false, type);
     }
-    validateInput(name,value,inch=false, min,max, type){
+    validateInput(name,value,inch=false, min,max,type ){
         let calcOptionsState ={...this.state.calcOptions};
         if(type !== 'number'){
             calcOptionsState[name] = value;
@@ -505,34 +506,26 @@ class Specifications extends React.Component {
                             })
                             }
 
-                            <View style={styles.inputContainer}>
-                                    <TextInput
-                                        name={'quantity'}
-                                        placeholder = {this.state.errors['quantity'] ?this.state.errors['quantity'] :'Quantity'}
-                                        placeholderTextColor = {this.state.errors['quantity'] ? "#ff7584" :"#3492f4"}
-                                        autoCapitalize = "none"
-                                        value={this.state.calcOptions.quantity}
-                                        multiline={false}
-                                        onChangeText={value=>this.validateInput('quantity',value,false,1,1000,'number')}
-                                        blurOnSubmit={true}
-                                        keyboardType={'numeric'}
-                                        style={[commonStyles.input]}
-                                    />
-                            </View>
-                            <View style={styles.inputContainer}>
-                                    <TextInput
-                                        name={'comment'}
-                                        placeholder = {this.state.errors['comment'] ?this.state.errors['comment'] :'Add comment'}
-                                        placeholderTextColor = {this.state.errors['comment'] ? "#ff7584" :"#3492f4"}
-                                        autoCapitalize = "none"
-                                        value={this.state.calcOptions.comment}
-                                        multiline={true}
-                                        numberOfLines={3}
-                                        onChangeText={value=>this.validateInput('comment',value,false,1,1000,'text')}
-                                        blurOnSubmit={true}
-                                        style={[commonStyles.input]}
-                                    />
-                            </View>
+
+                            <InputContainer
+                                state={this.state}
+                                name={'quantity'}
+                                type={'text'}
+                                label={'Quantity'}
+                                value={this.state.calcOptions.quantity}
+                                onChangeText={value=>this.validateInput('quantity',value,false,1,1000,'number')}
+
+
+                            />
+                            <InputContainer
+                                state={this.state}
+                                onChangeText={value=>this.validateInput('comment',value,false,false,false,'text')}
+                                name={'comment'}
+                                value={this.state.calcOptions.comment}
+                                type={'text'}
+                                label={'Add comment'}
+
+                            />
                             <View style={[styles.inputContainer,commonStyles.rowMargin]}>
                                 <View style={{flexDirection:'column', alignItems:'center'}}>
                                     {this.props.kit.price&&
@@ -597,7 +590,10 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center'
     },
-
+    rowContainer:{
+          flexDirection: 'column',
+        alignItems: 'center'
+    },
 
 });
 

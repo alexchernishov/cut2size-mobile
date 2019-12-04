@@ -9,6 +9,7 @@ import {
 
 import Icon from 'react-native-vector-icons/AntDesign';
 import commonStyles from '../styles';
+import {InputContainer} from '../../../components/views/InputContainer';
 
 
 class DimensionsInput extends React.Component {
@@ -29,9 +30,10 @@ class DimensionsInput extends React.Component {
                     onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, false, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                     blurOnSubmit={true}
                     keyboardType={'numeric'}
-                    style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                    style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
-                />:
+                />
+                :
                     <View style={{ flex:0.8,flexDirection:'row'}}>
                         <TextInput
                             name={this.props.type}
@@ -44,7 +46,7 @@ class DimensionsInput extends React.Component {
                             onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 1, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
-                            style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                            style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                         />
                         <TextInput
@@ -58,7 +60,7 @@ class DimensionsInput extends React.Component {
                             onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 2, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
-                            style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                            style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                         />
                         <TextInput
@@ -72,7 +74,7 @@ class DimensionsInput extends React.Component {
                             onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 3, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
-                            style={[commonStyles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
+                            style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
 
                         />
                     </View>
@@ -103,7 +105,18 @@ const styles = StyleSheet.create({
         borderWidth:1,
         borderColor:'#ff7584',
     },
+    input: {
+        flex:1,
+        // flexDirection:'row',
+        // height:'auto'
+        textAlign:'center',
+        backgroundColor:'#fff',
+        marginBottom:5,
+        marginTop:5,
+        padding:10,
+        color:'#000',
 
+    },
 });
 
 export default DimensionsInput

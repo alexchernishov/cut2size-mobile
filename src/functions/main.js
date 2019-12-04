@@ -247,4 +247,20 @@ export const arrayObjKeyExists = (array,key) => {
 
 export const formatPrice=(price) =>{
     return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+};
+export const formatName = (name) => {
+    name = name.replace(/[_\-\.]/gi," ");
+    // name = name.charAt(0).toUpperCase() + name.slice(1);
+    name = name.toLowerCase()
+        .split(' ')
+        .map((s) => s.charAt(0).toUpperCase() + s.substring(1))
+        .join(' ');
+    return name;
+};
+export function ucfirst( str ) {	// Make a string&#039;s first character uppercase
+    //
+    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+
+    var f = str.charAt(0).toUpperCase();
+    return f + str.substr(1, str.length-1);
 }

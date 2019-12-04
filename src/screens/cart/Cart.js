@@ -18,7 +18,7 @@ class Cart extends React.Component{
 
             }}
         >
-                        {this.props.products && this.props.products.length>0
+            {this.props.products && this.props.products.length>0
                             ?
                                  this.props.products.map((item,index) => <Product key={index} item={item}/>)
                             :
@@ -28,7 +28,7 @@ class Cart extends React.Component{
                                     marginTop:10,
                                     flex:1,
                                     backgroundColor:'#f5f5f5'
-                                }}><Text>Cart is empty</Text></View>
+                                }}><Text style={{textAlign:'center'}}>Cart is empty</Text></View>
                         }
                         {this.props.total>0 &&
                             <View

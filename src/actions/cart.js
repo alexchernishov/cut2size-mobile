@@ -13,7 +13,7 @@ export const setCartProducts = (cart_products) => {
     if(cart_products && cart_products.length>0){
         cart_products.map(product=>{
                 total+=(product.price_new? product.price_new : product.price)*product.quantity;
-                quantityTotal+=product.quantity;
+                quantityTotal+=parseInt(product.quantity);
                 return product;
         }
         );
@@ -74,7 +74,7 @@ export const addProductToCart = (product, quantity) => {
     let exist = false;
     for(let i in cart_products){
         if(cart_products[i].id === product.id && (product.kit && cart_products[i].kit)){
-            cart_products[i].quantity += quantity;
+            cart_products[i].quantity =parseInt(cart_products[i].quantity) +  parseInt(quantity);
             exist = true;
             break;
         }
