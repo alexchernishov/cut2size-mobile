@@ -1,5 +1,5 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View,Text} from 'react-native';
+import {ScrollView, StyleSheet, View, Text} from 'react-native';
 import {connect} from 'react-redux';
 import {InputContainer} from '../../components/views/InputContainer';
 import {formatPrice, ucfirst} from '../../functions/main';
@@ -7,6 +7,11 @@ import MainButton from '../../components/MainButton';
 import {Icon} from 'react-native-elements';
 import CartTotal from '../../components/cart/CartTotal';
 import {REACT_APP_SHIPPING_PRICE} from 'react-native-dotenv';
+import {get, postForm} from '../../api/main';
+import {setCurrentCustomer, setToken} from '../../actions/authentication';
+import jwt_decode from 'jwt-decode';
+import {store} from '../../store/store';
+import {clearCart} from '../../actions/cart';
 
 class Checkout extends React.Component{
 
@@ -95,11 +100,74 @@ class Checkout extends React.Component{
                 ...Object.keys(inputs)
             },
             inputs:inputs,
-            shipping:true
+            shipping:true,
+            account:false,
+            edit: {
+                info:false,
+                payment:false,
+                shipping:false,
+            },
+            passwordType:'password',
+            submitButtonDisable:false,
+            proceedPaymentButtonDisable:false,
         };
 
         this.validateInput= this.validateInput.bind(this);
     }
+
+
+
+
+
+    componentDidMount() {
+
+
+        this.getAccountInfo();
+
+        if(!this.props.products || this.props.products.length<1){
+            this.props.navigation.navigate('Cart');
+        }
+    }
+
+
+    componentWillReceiveProps(nextProps, nextContext) {
+
+        if(this.props.customer.id !== nextProps.customer.id){
+            this.getAccountInfo(nextProps.customer.id);
+        }
+    }
+
+
+    getAccountInfo(id){
+
+        let customerId = id ? id : this.props.customer.id;
+        if(customerId){
+            get('API','customers/'+customerId,this.props.authToken, this.props)
+                .then(res=>{
+
+                    if(res.errors){
+                            this.setState({errors:res.errors})
+                        }else{
+
+                            let customerFields = this.state.inputs;
+                            for(let i in Object.keys(customerFields)){
+                                let key = Object.keys(customerFields)[i];
+                                    if(res[key]){
+                                        customerFields[key].value = res[key]
+                                    }
+                            }
+                            this.setState({account:res, inputs:customerFields});
+                        }
+                    })
+                        .catch(error=>{
+                            this.setState({errors:error})
+
+                        });
+        }
+
+    }
+
+
 
 
     validateInput=(name,value)=>{
@@ -111,6 +179,86 @@ class Checkout extends React.Component{
         e.preventDefault();
         this.setState({shipping:!this.state.shipping})
     };
+
+    checkout(e){
+        e.preventDefault();
+        let self = this;
+        this.setState({proceedPaymentButtonDisable: true});
+        let initialData = {};
+        for(let i in Object.keys(this.state.inputs)){
+            let key = Object.keys(this.state.inputs)[i];
+            initialData[key] = this.state.inputs[key].value;
+        }
+
+        initialData.customer = this.props.customer;
+        initialData.products = this.props.products;
+
+
+        //Send shipping same checkbox
+        initialData.ship_pay = this.state.shipping;
+
+        postForm('API','orders/customer',initialData, this.props.authToken,this.props).then(res=>{
+            if(res.errors){
+                this.setState({errors:res.errors});
+                this.setState({submitButtonDisable: false});
+                this.setState({proceedPaymentButtonDisable: false});
+            }else{
+                let success = [];
+                if(res && res.result &&  res.result.length>0){
+                    res.result.forEach(function (item) {
+                        if(item.login){
+                            if(item.login.token){
+                                const { token } = item.login;
+
+                                const decoded = jwt_decode(token);
+                                store.dispatch(setCurrentCustomer(decoded));
+                                this.props.setToken(token);
+                                this.props.navigation.goBack(null);
+                            }
+
+                        }else{
+                            success.push(item);
+                        }
+                    })
+                }
+
+                this.setState({success:success});
+                this.setState({errors:false});
+                this.setState({proceedPaymentButtonDisable: false});
+
+                if(res.order && res.payment){
+                    let order  =res.order;
+                    order.hash = res.payment.hash;
+                    order.date = res.payment.date;
+                    setTimeout(function () {
+                        self.setState({submitButtonDisable: false});
+                        // self.props.history.push({
+                        //     pathname: "/cart/checkout/payment",
+                        //     state: {
+                        //         order: order,
+                        //     }
+                        // })
+                        self.props.navigation.navigate('payment')
+                    },1500);
+                }
+
+
+            }
+
+        }).catch(error=>{
+            console.log(error);
+
+            this.setState({submitButtonDisable: false});
+            this.setState({proceedPaymentButtonDisable: false});
+            let errors = (error.response ? (error.response.data ? error.response.data : error.response ) : error);
+            this.setState({errors:(errors.errors ? errors.errors : errors)})
+        });
+
+    }
+
+
+
+
 
     render() {
             return <ScrollView
@@ -140,7 +288,7 @@ class Checkout extends React.Component{
                         />
                         </View>
                     }
-                    <MainButton>Procced to payment</MainButton>
+                    <MainButton onPress={e=>this.checkout(e)}>Procced to payment</MainButton>
                 </View>
             </ScrollView>
     }
@@ -151,6 +299,7 @@ export class CustomerFields extends React.Component{
 
 
     render() {
+
         return (
            <View style={{
                marginBottom:10,
@@ -185,7 +334,7 @@ export class CustomerFields extends React.Component{
                        {Object.keys(this.props.state.inputs).map((input,index)=> {
                            let name = input;
                            let label = this.props.state.inputs[input].label;
-                           let value = this.props.state.inputs[input].value;
+                           let value =  this.props.state.inputs[input].value;
 
                            return (name.indexOf(this.props.type)!==-1)&&<InputContainer
                                key={index}
@@ -231,8 +380,21 @@ const mapStateToProps = (state) => {
         products: state.cartReducer.products,
         quantityTotal: state.cartReducer.quantityTotal,
         total: state.cartReducer.total,
+        customer: state.authReducer.customer,
+        authToken: state.authReducer.authToken,
+    };
+};
+
+// Map Dispatch To Props (Dispatch Actions To Reducers. Reducers Then Modify The Data And Assign It To Your Props)
+const mapDispatchToProps = (dispatch) => {
+    // Action
+    return {
+        setToken: (token) => dispatch(setToken(token)),
+        setCurrentCustomer: (token) => dispatch(setCurrentCustomer(token)),
+        clearCart: (token) => dispatch(clearCart({})),
+
     };
 };
 
 // Exports
-export default connect(mapStateToProps)(Checkout);
+export default connect(mapStateToProps,mapDispatchToProps)(Checkout);

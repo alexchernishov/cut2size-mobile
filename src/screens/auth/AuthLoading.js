@@ -5,7 +5,7 @@ import {
     View,
 } from 'react-native';
 import { connect } from 'react-redux';
-import {setLogged, setToken} from '../../actions/auth';
+import {setToken} from '../../actions/authentication';
 
 class AuthLoadingScreen extends React.Component {
     componentDidMount() {

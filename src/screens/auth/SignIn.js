@@ -21,7 +21,7 @@ class SignInScreen extends React.Component {
             email:false,
             password:false,
         }
-    }
+    };
 
     constructor(props) {
         super(props);

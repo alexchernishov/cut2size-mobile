@@ -1,7 +1,8 @@
 
 import { CALC_API_URL, API_URL } from 'react-native-dotenv'
+import logoutAction from '../screens/auth/logoutAction';
 
-export const postForm = (type='API',url,params, token=false) => {
+export const postForm = (type='API',url,params, token=false, props=false) => {
     let apiUrl = (type==='API') ? API_URL : CALC_API_URL;
 
     let config = {
@@ -13,16 +14,30 @@ export const postForm = (type='API',url,params, token=false) => {
         body: JSON.stringify(params),
     };
 
+
     if(token){
-        config.headers['Authorization'] = 'Bearer '+token
+        token  = token.indexOf('Bearer')!==-1 ? token :  'Bearer '+token;
+        config.headers['Authorization'] = token
     }
-
-
-        console.log(apiUrl+url);
+    console.log(config);
     return fetch(apiUrl+url,config)
         .then((response) => {
+            console.log(response);
             if(response && response.status===404){
                 return {error:'Not found'}
+            }
+            if(response.status===401){
+                if(props && props.setToken&&
+                    props.setCurrentCustomer&&
+                    props.clearCart&&
+                    props.navigation){
+                    return logoutAction(props);
+                }
+                return {
+                    errors:'Unauthorized',
+                    status:401
+
+                }
             }
             return response.json()
         })
@@ -36,7 +51,7 @@ export const postForm = (type='API',url,params, token=false) => {
 };
 
 
-export const get = (type='API',url, token=false) => {
+export const get = (type='API',url, token=false, props=false) => {
 
     let apiUrl = (type==='API') ? API_URL : CALC_API_URL;
 
@@ -49,17 +64,35 @@ export const get = (type='API',url, token=false) => {
     };
 
     if(token){
-        config.headers['Authorization'] = 'Bearer '+token
+        token  = token.indexOf('Bearer')!==-1 ? token :  'Bearer '+token;
+        config.headers['Authorization'] = token
     }
-
     return fetch(apiUrl+url,config)
         .then((response) => {
+
             if(response.status ){
                 if(response.status===200){
                     return response.json()
                 }
                 if(response.status===404){
-                    return 'Not found'
+                    return {
+                        errors:'Not found',
+                        status:404
+                    }
+                }
+                if(response.status===401){
+                    if(props && props.setToken&&
+                            props.setCurrentCustomer&&
+                            props.clearCart&&
+                            props.navigation){
+                        return logoutAction(props);
+                    }
+
+                    return {
+                        errors:'Unauthorized',
+                        status:401
+
+                    }
                 }
             }
         })
