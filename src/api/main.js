@@ -2,11 +2,11 @@
 import { CALC_API_URL, API_URL } from 'react-native-dotenv'
 import logoutAction from '../screens/auth/logoutAction';
 
-export const postForm = (type='API',url,params, token=false, props=false) => {
+export const postForm = (type='API',url,params, token=false, props=false, method='POST') => {
     let apiUrl = (type==='API') ? API_URL : CALC_API_URL;
 
     let config = {
-        method: 'POST',
+        method: method,
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -14,16 +14,14 @@ export const postForm = (type='API',url,params, token=false, props=false) => {
         body: JSON.stringify(params),
     };
 
-
     if(token){
         token  = token.indexOf('Bearer')!==-1 ? token :  'Bearer '+token;
         config.headers['Authorization'] = token
     }
-    console.log(config);
+
     return fetch(apiUrl+url,config)
         .then((response) => {
-            console.log(response);
-            if(response && response.status===404){
+            if(response && (response.status===404 || response.status===504 )){
                 return {error:'Not found'}
             }
             if(response.status===401){
