@@ -6,7 +6,7 @@ import {formatPrice, ucfirst} from '../../functions/main';
 import MainButton from '../../components/MainButton';
 import {Icon} from 'react-native-elements';
 import CartTotal from '../../components/cart/CartTotal';
-import {REACT_APP_SHIPPING_PRICE} from 'react-native-dotenv';
+import {REACT_APP_SHIPPING_PRICE,RECEIPT_PAGE} from 'react-native-dotenv';
 import {get, postForm} from '../../api/main';
 import {setCurrentCustomer, setToken} from '../../actions/authentication';
 import jwt_decode from 'jwt-decode';
@@ -206,17 +206,19 @@ class Checkout extends React.Component{
 
         initialData.customer = this.props.customer;
         initialData.products = this.props.products;
-
-
+        initialData.subtotal_price = this.props.total;
+        initialData.shipping_price = REACT_APP_SHIPPING_PRICE;
+        initialData.total_price = parseFloat(this.props.total)+parseFloat(REACT_APP_SHIPPING_PRICE);
         //Send shipping same checkbox
         initialData.ship_pay = self.state.shipping;
+        initialData.receipt_page = RECEIPT_PAGE;
 
+        console.log('initialData',initialData);
         postForm('API','api/v1/orders/customer',initialData, this.props.authToken,this.props, 'PUT').then(res=>{
             if(!res){
                 return;
             }
 
-            console.log('res',res);
             if(res && res.errors){
                 self.setState({
                     errors:res.errors,
@@ -251,7 +253,6 @@ class Checkout extends React.Component{
                     order.hash = res.payment.hash;
                     order.date = res.payment.date;
 
-                    console.log('order',order);
                     // setTimeout(function () {
                         self.props.navigation.navigate('Payment',{
                             order: order,
@@ -296,12 +297,12 @@ class Checkout extends React.Component{
         switch (route.key) {
             case 'new':
                 return <NewCustomer
-                    state={this.state}
-                    total={this.props.total}
-                    validateInput={this.validateInput}
-                    shippingShow={this.shippingShow}
-                    checkout={this.checkout}
-                />;
+                            state={this.state}
+                            total={this.props.total}
+                            validateInput={this.validateInput}
+                            shippingShow={this.shippingShow}
+                            checkout={this.checkout}
+                        />;
             case 'login':
                 return <SignInScreen navigation = {this.props.navigation}/>;
             default:

@@ -684,7 +684,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.santeeno.cut2size;
 				PRODUCT_NAME = cut2size;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -703,7 +703,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.santeeno.cut2size;
 				PRODUCT_NAME = cut2size;
 				VERSIONING_SYSTEM = "apple-generic";
 			};

@@ -14,6 +14,7 @@ import Logout from '../screens/auth/Logout';
 import Cart from '../screens/cart/Cart';
 import Checkout from '../screens/checkout/Checkout';
 import Payment from '../screens/checkout/Payment';
+import Success from '../screens/checkout/Success';
 import CartIcon from '../components/cart/CartIcon';
 
 const AuthStack = createStackNavigator({ SignIn: SignInScreen });
@@ -31,6 +32,7 @@ const MainNavigator = createStackNavigator({
     Cart: Cart,
     Checkout: Checkout,
     Payment: Payment,
+    Success: Success,
 },{
     defaultNavigationOptions:  ({navigation}) => ({
          headerRight:  (

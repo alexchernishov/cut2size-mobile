@@ -264,3 +264,4 @@ export function ucfirst( str ) {	// Make a string&#039;s first character upperca
     var f = str.charAt(0).toUpperCase();
     return f + str.substr(1, str.length-1);
 }
+
