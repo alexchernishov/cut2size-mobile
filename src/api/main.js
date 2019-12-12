@@ -18,7 +18,6 @@ export const postForm = (type='API',url,params, token=false, props=false, method
         token  = token.indexOf('Bearer')!==-1 ? token :  'Bearer '+token;
         config.headers['Authorization'] = token
     }
-
     return fetch(apiUrl+url,config)
         .then((response) => {
             if(response && (response.status===404 || response.status===504 )){

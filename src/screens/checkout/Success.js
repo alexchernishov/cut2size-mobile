@@ -1,30 +1,52 @@
 import React from 'react';
-import {View, Text,StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {setCurrentCustomer, setToken} from '../../actions/authentication';
 import {clearCart} from '../../actions/cart';
 import {connect} from 'react-redux';
+import {postForm} from '../../api/main';
+import {store} from '../../store/store';
 
 
 
 class Success extends React.Component{
+    state={
+        payment: false
+    };
 
+    componentDidMount() {
+        this.validatePayment();
+    }
+    validatePayment(){
+        let params = this.props.navigation.state.params;
+        if(params.ORDERID && params.ORDERID.length>0){
+            store.dispatch(clearCart());
+            console.log('params',params);
+            postForm('API','api/v1/orders/paymentValidate',
+                params,
+                this.props.authToken,this.props,'PUT').then(res=>{
+                console.log(res);
 
-    _onLoad(state) {
-        console.log(state.url);
-        // if (state.url.indexOf(BASEURL + '/auth/success') != -1) {
-        //     let token = state.url.split("token=")[1];
-        //     token = token.substring(0, token.length - 4);
-        //     NavigationsActions.back();
-        //     SessionActions.setSession(token);
-        // }
+                if(res.errors && res.errors.length>0){
+                    this.setState({errors:res.errors});
+                }else{
+                    this.setState({success:res.success,errors:false,payment:params});
+                }
+            }).catch(error=>{
+                let errors = error.response ? (error.response.data ? error.response.data : error.response.statusText ) : error;
+                this.setState({errors:(errors.errors ? errors.errors : (errors.name ? errors.name : errors))})
+            })
+        }
+
     }
 
     render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
-        console.log('this.props.navigation.state.params',this.props.navigation.state.params);
         return <View
             style={styles.container}
-
-        ><Text>Success</Text>
+        >{this.state.payment?<View>
+            <Text>Thank you for your order.</Text>
+            <Text>We’re processing it now. You will receive an email confirmation shortly.</Text>
+            <TouchableOpacity onPress={e=>this.props.navigation.navigate('Calculator')}><Text>Continue Shopping</Text></TouchableOpacity>
+        </View>:<View><Text>{this.state.errors}</Text></View>}
         </View>;
     }
 

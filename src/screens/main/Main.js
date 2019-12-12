@@ -13,15 +13,15 @@ class Main extends React.Component {
 
     componentDidMount(): void {
 
-        const url = 'cut2size-app://';
-        Linking.canOpenURL(url).then(supported => {
-            if (!supported) {
-                console.warn('Can\'t handle url: ' + url);
-            } else {
-                console.warn('YEs handle url: ' + url);
-                // return Linking.openURL(url);
-            }
-        }).catch(err => console.error('An error occurred', err));
+        // const url = 'cut2size-app://';
+        // Linking.canOpenURL(url).then(supported => {
+        //     if (!supported) {
+        //         console.warn('Can\'t handle url: ' + url);
+        //     } else {
+        //         console.warn('YEs handle url: ' + url);
+        //         // return Linking.openURL(url);
+        //     }
+        // }).catch(err => console.error('An error occurred', err));
     }
     render() {
         return (

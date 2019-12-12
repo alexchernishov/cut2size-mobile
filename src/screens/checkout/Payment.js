@@ -5,6 +5,7 @@ import {clearCart} from '../../actions/cart';
 import {connect} from 'react-redux';
 import { WebView } from 'react-native-webview';
 import { REACT_APP_PAYMENT_URL ,REACT_APP_PAYMENT_TERMINALID,REACT_APP_PAYMENT_CURRENCY,RECEIPT_PAGE} from 'react-native-dotenv'
+import {getUrlVars} from '../../functions/main';
 
 
 
@@ -16,21 +17,19 @@ class Payment extends React.Component{
     }
 
     _onLoad(state) {
-        let params  = new URLSearchParams(state.url);
         if (state.url.indexOf(RECEIPT_PAGE) !== -1) {
-
-            this.props.navigation.navigate('Success',{
-                params:{
-                    ORDERID:params.get('ORDERID'),
-                    AMOUNT:params.get('AMOUNT'),
-                    UNIQUEREF:params.get('UNIQUEREF'),
-                    HASH:params.get('HASH'),
-                    TERMINALID:params.get('TERMINALID'),
-                    DATETIME:params.get('DATETIME'),
-                    RESPONSECODE:params.get('RESPONSECODE'),
-                    RESPONSETEXT:params.get('RESPONSETEXT'),
-                }
-            });
+            let params  = getUrlVars(state.url);
+            params  = {
+                ORDERID:params.ORDERID,
+                AMOUNT:params.AMOUNT,
+                UNIQUEREF:params.UNIQUEREF,
+                HASH:params.HASH,
+                TERMINALID:params.TERMINALID,
+                DATETIME:params.DATETIME,
+                RESPONSECODE:params.RESPONSECODE,
+                RESPONSETEXT:params.RESPONSETEXT,
+            };
+            this.props.navigation.navigate('Success',params);
 
         }
     }
@@ -47,17 +46,6 @@ class Payment extends React.Component{
             HASH :order ? (order.hash).toString(): false,
             // "payment-method" :order ? (order.hash): false,
             RECEIPTPAGEURL :RECEIPT_PAGE,
-        });
-
-        console.log({
-            TERMINALID :(REACT_APP_PAYMENT_TERMINALID).toString(),
-            ORDERID:order ? (order.id).toString() : false,
-            CURRENCY :(REACT_APP_PAYMENT_CURRENCY).toString(),
-            AMOUNT :order ? order.total_price : false,
-            DATETIME :order ? (order.date).toString(): false,
-            HASH :order ? (order.hash).toString(): false,
-            // "payment-method" :order ? (order.hash): false,
-            RECEIPTPAGEURL :'cut2size-app://',
         });
         return <View
             style={styles.container}

@@ -265,3 +265,11 @@ export function ucfirst( str ) {	// Make a string&#039;s first character upperca
     return f + str.substr(1, str.length-1);
 }
 
+export const  getUrlVars=(url) =>{
+    var vars = {};
+    var parts = url.replace(/[?&]+([^=&]+)=([^&]*)/gi,
+        function(m,key,value) {
+            vars[key] = value;
+        });
+    return vars;
+}
