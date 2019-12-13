@@ -14,9 +14,7 @@ class Cart extends React.Component{
     render() {
         return <ScrollView
             style={styles.container}
-            contentContainerStyle={{
 
-            }}
         >
             {this.props.products && this.props.products.length>0
                             ?

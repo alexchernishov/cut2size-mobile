@@ -1,6 +1,6 @@
 // Imports: Dependencies
 import React from 'react';
-import {Button, StyleSheet, TouchableOpacity} from 'react-native';
+import {Button, StyleSheet, TouchableOpacity,View} from 'react-native';
 import { connect } from 'react-redux';
 import logoutAction from './logoutAction';
 import {setCurrentCustomer, setToken} from '../../actions/authentication';
@@ -21,9 +21,14 @@ class Logout extends React.Component {
     render() {
         return (
             this.props.isCustomerAuthenticated &&
+               <View style={{flexDirection:"row"}}>
+            <TouchableOpacity onPress={e=>this.props.navigation.navigate('Account')} style={{marginRight:10}} >
+                <Icon name='user' type={'antdesign'} size={20} style={{paddingHorizontal: 10}}/>
+            </TouchableOpacity>
             <TouchableOpacity onPress={e=>this.logout(e)} style={{marginRight:10}} >
                 <Icon name='logout' type={'antdesign'} size={20} style={{paddingHorizontal: 10}}/>
             </TouchableOpacity>
+               </View>
 
         )
     }

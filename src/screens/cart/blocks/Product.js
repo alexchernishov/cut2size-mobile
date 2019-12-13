@@ -55,7 +55,13 @@ class Product extends React.Component{
 
     render() {
         let item = this.props.item;
-        return  <View
+        item.fields = ((item.fields  instanceof Array))
+            ? item.fields
+            : Object.keys(item.fields).map(function(key) {
+            return {name:key, value:item.fields[key]};
+        })
+        ;
+        return  item ? <View
                         style={styles.container}>
                         <View style={styles.rowContainer}>
                             <TouchableOpacity
@@ -66,13 +72,11 @@ class Product extends React.Component{
                             <Image style={[{
                                 height:100,
                                 width:null
-                            },styles.rowItem]} resizeMode='contain' source={{ uri: item.system_files[0].disk_name}}/>
+                            },styles.rowItem]} resizeMode='contain' source={{ uri: item.image ? item.image : item.system_files[0].disk_name}}/>
                             <Text style={[styles.rowItem,{textAlign:'center'}]} >{item.name}</Text>
-                            <TouchableOpacity
-                                style={[styles.rowItem,{justifyContent:'center', flexDirection:'row'}]}
-                                onPress={e=>this.deleteItem(e,item.id)}>
-                                <Icon   onPress={e=>this.toogleCollapse(e)}  style={{textAlign:'center'}}  name='menu' size={30} color={'black'} />
-                            </TouchableOpacity>
+                                <Icon   onPress={e=>this.toogleCollapse(e)}
+                                        style={[styles.rowItem,{justifyContent:'center', flexDirection:'row'}]}
+                                        name='menu' size={30} color={'black'} />
                         </View>
 
                         <View style={styles.rowContainer}>
@@ -97,10 +101,9 @@ class Product extends React.Component{
                                     flexDirection:'column',
                                     flexWrap: 'wrap',
                                 }}>
-                                {Object.keys(item.fields).map((name,index)=>{
-                                    let value  =item.fields[name];
-
-                                    let nameFormated  = formatName(name);
+                                {item.fields.map((field,index)=>{
+                                    let value  =field.value;
+                                    let nameFormated  = formatName(field.name);
                                     return (
                                         (value && typeof value == 'object')?
                                             Object.keys(value).map((nameVal,indexVal)=>{
@@ -126,6 +129,7 @@ class Product extends React.Component{
                             </Animated.View>
 
                     </View>
+            : null
     }
 
 

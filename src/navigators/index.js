@@ -9,15 +9,25 @@ import Cabinet from '../screens/calculator/Cabinet';
 import Options from '../screens/calculator/Options';
 import Specifications from '../screens/calculator/Specifications';
 import ProductList from '../screens/calculator/ProductList';
-import SignInScreen from '../screens/auth/SignIn';
+import AuthScreen from '../screens/auth/AuthScreen';
 import Logout from '../screens/auth/Logout';
 import Cart from '../screens/cart/Cart';
 import Checkout from '../screens/checkout/Checkout';
 import Payment from '../screens/checkout/Payment';
 import Success from '../screens/checkout/Success';
+import Account from '../screens/account/Account';
 import CartIcon from '../components/cart/CartIcon';
+import {Icon} from 'react-native-elements';
 
-const AuthStack = createStackNavigator({ SignIn: SignInScreen });
+const AuthStack = createStackNavigator(
+    { AuthScreen: AuthScreen },
+    {
+        headerMode: 'none',
+        navigationOptions: {
+            gesturesEnabled: true
+        }
+    }
+    );
 const SuccessStack = createStackNavigator({ Success: Success });
 
 
@@ -29,13 +39,19 @@ const MainNavigator = createStackNavigator({
     Options: {screen: Options},
     Specifications: {screen: Specifications},
     ProductList: {screen: ProductList},
-    Auth: AuthStack,
+    AuthScreen: AuthStack,
     Cart: Cart,
     Checkout: Checkout,
     Payment: Payment,
     SuccessStack: SuccessStack,
+    Account: Account,
 },{
     defaultNavigationOptions:  ({navigation}) => ({
+         // headerLeft:  (
+         //     <View style={{flexDirection: 'row', alignItems: 'center'}}>
+         //         <Icon name={'home'}  size={30} style={{marginLeft:10,paddingHorizontal: 10}}/>
+         //     </View>
+         // ),
          headerRight:  (
              <View style={{flexDirection: 'row', alignItems: 'center'}}>
                  <CartIcon navigation={navigation}/>
