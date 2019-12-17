@@ -361,6 +361,8 @@ class Specifications extends React.Component {
             postData
         )
             .then(res => {
+
+                console.log(res);
                 store.dispatch(setPrice({price: res}));
             })
             .catch(err => {
@@ -551,7 +553,7 @@ class Specifications extends React.Component {
                                                         onPress={e=>this.getPrice(e)}>Get price</MainButton>
                                                     :
                                                     <MainButton
-                                                        onPress={e=>this.props.navigation.navigate('Auth')}>Sign in to get a price</MainButton>
+                                                        onPress={e=>this.props.navigation.navigate('AuthScreen')}>Sign in to get a price</MainButton>
                                             )
 
 

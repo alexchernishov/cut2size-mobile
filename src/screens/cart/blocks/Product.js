@@ -54,14 +54,14 @@ class Product extends React.Component{
     }
 
     render() {
-        let item = this.props.item;
+        const item = { ...this.props.item};
         item.fields = ((item.fields  instanceof Array))
             ? item.fields
             : Object.keys(item.fields).map(function(key) {
             return {name:key, value:item.fields[key]};
         })
         ;
-        return  item ? <View
+        return  (typeof item !=='undefined') ? <View
                         style={styles.container}>
                         <View style={styles.rowContainer}>
                             <TouchableOpacity
@@ -149,7 +149,8 @@ const styles = StyleSheet.create({
     container: {
         marginLeft:10,
         marginRight:10,
-        marginTop:10,
+        marginTop:5,
+        marginBottom:5,
         flex:1,
         borderBottomWidth:1,
         borderColor:'#CED0CE',

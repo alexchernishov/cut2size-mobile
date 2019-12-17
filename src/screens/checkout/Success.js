@@ -5,12 +5,14 @@ import {clearCart} from '../../actions/cart';
 import {connect} from 'react-redux';
 import {postForm} from '../../api/main';
 import {store} from '../../store/store';
+import commonStyles from '../calculator/styles';
+import MainButton from '../../components/MainButton';
 
 
 
 class Success extends React.Component{
     state={
-        payment: false
+        payment: true
     };
 
     componentDidMount() {
@@ -18,9 +20,8 @@ class Success extends React.Component{
     }
     validatePayment(){
         let params = this.props.navigation.state.params;
-        if(params.ORDERID && params.ORDERID.length>0){
+        if(params && params.ORDERID && params.ORDERID.length>0){
             store.dispatch(clearCart());
-            console.log('params',params);
             postForm('API','api/v1/orders/paymentValidate',
                 params,
                 this.props.authToken,this.props,'PUT').then(res=>{
@@ -42,10 +43,12 @@ class Success extends React.Component{
     render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
         return <View
             style={styles.container}
-        >{this.state.payment?<View>
+        >{this.state.payment?<View style={{
+            alignItems:'center'
+        }}>
             <Text>Thank you for your order.</Text>
             <Text>We’re processing it now. You will receive an email confirmation shortly.</Text>
-            <TouchableOpacity onPress={e=>this.props.navigation.navigate('Calculator')}><Text>Continue Shopping</Text></TouchableOpacity>
+            <MainButton  onPress={e=>this.props.navigation.navigate('Calculator')}>Continue Shopping</MainButton>
         </View>:<View><Text>{this.state.errors}</Text></View>}
         </View>;
     }

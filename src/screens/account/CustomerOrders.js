@@ -16,16 +16,15 @@ class CustomerOrders extends React.Component{
     };
 
     componentDidMount() {
-        if(!this.state.orders && !this.state.orders.count){
+        // if(!this.state.orders && !this.state.orders.count){
             this.getOrders()
-        }
+        // }
     }
 
     getOrders(){
 
         get('API','api/v1/orders/customer',this.props.authToken,this.props)
             .then(res=>{
-                    console.log(res);
                     if(res.errors){
                         this.setState({errors:res.errors})
                     }else{

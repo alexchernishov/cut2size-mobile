@@ -1,19 +1,16 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View, Text, ActivityIndicator} from 'react-native';
+import { StyleSheet} from 'react-native';
 import {connect} from 'react-redux';
-import {InputContainer} from '../../components/views/InputContainer';
-import {formatPrice, ucfirst} from '../../functions/main';
-import MainButton from '../../components/MainButton';
-import {Icon} from 'react-native-elements';
-import CartTotal from '../../components/cart/CartTotal';
 import {REACT_APP_SHIPPING_PRICE,RECEIPT_PAGE} from 'react-native-dotenv';
-import {get, postForm} from '../../api/main';
-import {setCurrentCustomer, setToken} from '../../actions/authentication';
+import { postForm} from '../../api/main';
+import {getAccountInfo, setCurrentCustomer, setToken} from '../../actions/authentication';
 import jwt_decode from 'jwt-decode';
 import {store} from '../../store/store';
 import {clearCart} from '../../actions/cart';
 import SignInScreen from '../auth/SignIn';
 import { TabView ,TabBar} from 'react-native-tab-view';
+import {AccountInputs} from '../../../staticVars';
+import {NewCustomer} from '../account/NewCustomer';
 
 class Checkout extends React.Component{
 
@@ -22,86 +19,12 @@ class Checkout extends React.Component{
 
         super(props);
 
-        let inputs={
-            payment_firstname:{
-                value:null,
-                label:'Firstname',
-            },
-            payment_lastname:{
-                value:null,
-                label:'Lastname',
-            },
-            payment_company:{
-                value:null,
-                label:'Company',
-            },
-            payment_address: {
-                value:null,
-                label:'Address',
-            },
-            payment_city: {
-                value:null,
-                label:'City',
-            },
-            payment_province: {
-                value:null,
-                label:'Province',
-            },
-            payment_postal_code: {
-                value:null,
-                label:'Postal code',
-            },
-            payment_country: {
-                value:null,
-                label:'Country',
-            },
-            payment_cell_phone: {
-                value:null,
-                label:'Cell phone',
-            },
-            shipping_firstname:{
-                value:null,
-                label:'Firstname',
-            },
-            shipping_lastname:{
-                value:null,
-                label:'Lastname',
-            },
-            shipping_company:{
-                value:null,
-                label:'Company',
-            },
-            shipping_address: {
-                value:null,
-                label:'Address',
-            },
-            shipping_city: {
-                value:null,
-                label:'City',
-            },
-            shipping_province: {
-                value:null,
-                label:'Province',
-            },
-            shipping_postal_code: {
-                value:null,
-                label:'Postal code',
-            },
-            shipping_country: {
-                value:null,
-                label:'Country',
-            },
-            shipping_cell_phone: {
-                value:null,
-                label:'Cell phone',
-            },
-        };
 
         this.state = {
             errors:{
-                ...Object.keys(inputs)
+                ...Object.keys(AccountInputs)
             },
-            inputs:inputs,
+            inputs:AccountInputs,
             shipping:true,
             account:false,
             edit: {
@@ -140,42 +63,23 @@ class Checkout extends React.Component{
         }
     }
 
-    //
-    // componentWillReceiveProps(nextProps, nextContext) {
-    //
-    //     if(this.props.customer.id !== nextProps.customer.id){
-    //         // this.getAccountInfo(nextProps.customer.id);
-    //     }
-    // }
-
 
     getAccountInfo(id){
 
         let customerId = id ? id : this.props.customer.id;
 
         if(customerId){
-            get('API','customers/'+customerId,this.props.authToken, this.props)
-                .then(res=>{
-
-                    if(res.errors){
-                            this.setState({errors:res.errors})
-                        }else{
-
-                            let customerFields = this.state.inputs;
-                            for(let i in Object.keys(customerFields)){
-                                let key = Object.keys(customerFields)[i];
-                                    if(res[key]){
-                                        customerFields[key].value = res[key]
-                                    }
-                            }
-
-                            this.setState({account:res, inputs:customerFields});
-                        }
-                    })
-                        .catch(error=>{
-                            this.setState({errors:error})
-
-                        });
+            getAccountInfo(this.props.customer.id, this.props, this.state.inputs).then(res=>{
+                if(res.errors){
+                    this.setState({errors:res.errors})
+                }else{
+                    if(res.account){
+                        this.setState({account:res.account, inputs:res.inputs});
+                    }
+                }
+            }).catch(error=>{
+                return this.setState({error:error});
+            });
         }
 
     }
@@ -212,13 +116,10 @@ class Checkout extends React.Component{
         //Send shipping same checkbox
         initialData.ship_pay = self.state.shipping;
         initialData.receipt_page = RECEIPT_PAGE;
-
-        console.log('initialData',initialData);
         postForm('API','api/v1/orders/customer',initialData, this.props.authToken,this.props, 'PUT').then(res=>{
             if(!res){
                 return;
             }
-
             if(res && res.errors){
                 self.setState({
                     errors:res.errors,
@@ -289,7 +190,6 @@ class Checkout extends React.Component{
                 }
             }
             onIndexChange={index => this.setState({ index })}
-            // initialLayout={{ width: Dimensions.get('window').width }}
         />
     }
 
@@ -301,7 +201,8 @@ class Checkout extends React.Component{
                             total={this.props.total}
                             validateInput={this.validateInput}
                             shippingShow={this.shippingShow}
-                            checkout={this.checkout}
+                            submit={this.checkout}
+                            submitText={'Proceed to payment'}
                         />;
             case 'login':
                 return <SignInScreen navigation = {this.props.navigation}/>;
@@ -312,123 +213,9 @@ class Checkout extends React.Component{
 
 }
 
-export class NewCustomer extends React.Component{
-    render(): React.ReactElement<any, string | React.JSXElementConstructor<any>> | string | number | {} | React.ReactNodeArray | React.ReactPortal | boolean | null | undefined {
-        return <ScrollView
-            style={styles.container}
-        >
-            <View style={{marginBottom:20}}>
-
-                <CustomerFields
-                    label={'Payment Information'}
-                    type={'payment'}
-                    state={this.props.state}
-                    validateInput={this.props.validateInput}
-                />
-                <CustomerFields
-                    label={'Shipping Information'}
-                    type={'shipping'}
-                    state={this.props.state}
-                    validateInput={(name,value)=>this.props.validateInput(name,value)}
-                    shipping={this.props.state.shipping}
-                    shippingShow={this.props.shippingShow}
-                />
-                {this.props.total>0 &&
-                <View
-                    style={styles.cartItem}
-                ><CartTotal
-                    subtotal={formatPrice(parseFloat(this.props.total)+parseFloat(REACT_APP_SHIPPING_PRICE))}
-                    total={formatPrice(parseFloat(this.props.total)+parseFloat(REACT_APP_SHIPPING_PRICE))}
-                />
-                </View>
-                }
-                {this.props.state.proceedPaymentButtonDisable ?                 <ActivityIndicator animating size="large" />
-                    :  <MainButton
-                    onPress={e=>this.props.checkout(e)}
-                    // disable={this.props.state.proceedPaymentButtonDisable}
-                >Proceed to payment</MainButton>}
-
-            </View>
-        </ScrollView>
-    }
-
-}
-
-export class CustomerFields extends React.Component{
 
 
-    render() {
-        return (
-           <View style={{
-               marginBottom:10,
-               marginTop:10,
-               flex:1
-           }}>
 
-                   <View style={{
-                       flexDirection:'row',
-                       justifyContent:'space-between',
-                       alignItems:'center',
-                   }}>
-                       <Text style={{marginLeft:5}}>{this.props.label}</Text>
-                       {this.props.type==='shipping'&&
-                           <View style={{
-                               flexDirection:'row',
-                               justifyContent:'space-between',
-                               alignItems:'center',
-                               margin:10
-                           }}><Text>Same as payment</Text>
-                               <Icon
-                                   onPress={e=>this.props.shippingShow(e)}
-                                   size={30}
-                                   type={'materialicons'}
-                                   name={this.props.shipping ? 'radio-button-checked':'radio-button-unchecked'
-
-                           }/></View>
-                       }
-                   </View>
-               {!this.props.shipping&&
-                   <View>
-                       {Object.keys(this.props.state.inputs).map((input,index)=> {
-                           let name = input;
-                           let label = this.props.state.inputs[input].label;
-                           let value =  this.props.state.inputs[input].value;
-
-                           return (name.indexOf(this.props.type)!==-1)&&<InputContainer
-                               key={index}
-                               state={this.props.state}
-                               onChangeText={value => this.props.validateInput(name, value)}
-                               name={name}
-                               type={'text'}
-                               label={ucfirst(label)}
-                               value={value}
-
-                           />
-                       })}
-                   </View>
-               }
-
-
-           </View>
-        );
-    }
-}
-
-
-const styles = StyleSheet.create({
-    container: {
-        flex:1,
-        backgroundColor:'#f5f5f5'
-    },
-    cartItem:{
-        flex:1,
-        backgroundColor:'#fff',
-        marginTop:20,
-        marginBottom:20,
-        marginLeft:10,
-        marginRight:10,
-    }
-});
 
 // Map State To Props (Redux Store Passes State To Component)
 const mapStateToProps = (state) => {

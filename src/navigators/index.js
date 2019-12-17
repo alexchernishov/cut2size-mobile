@@ -28,7 +28,13 @@ const AuthStack = createStackNavigator(
         }
     }
     );
-const SuccessStack = createStackNavigator({ Success: Success });
+const SuccessStack = createStackNavigator({ Success: Success },
+    {
+        headerMode: 'none',
+        navigationOptions: {
+            gesturesEnabled: true
+        }
+    });
 
 
 const MainNavigator = createStackNavigator({

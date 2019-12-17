@@ -1,6 +1,6 @@
 // import setAuthToken from '../setAuthToken';
 import jwt_decode from 'jwt-decode';
-import {postForm} from '../api/main';
+import {get, postForm} from '../api/main';
 
 
 export const setToken = (payload) =>(
@@ -35,64 +35,26 @@ export const setCurrentCustomer = decoded => {
     }
 };
 
+export const getAccountInfo=(id,props,inputs)=>{
+      return  get('API','customers/'+id,props.authToken, props)
+            .then(res=>{
 
-/*
+                if(res.errors){
+                    return res;
+                }else{
 
-export const logoutUser = (history) => dispatch => {
-    localStorage.removeItem('jwtToken');
-    setAuthToken(false);
-    dispatch(setCurrentUser({}));
-    if(history){
-        history.push('/login');
-    }else{
-        window.location.href = '/login'
-    }
-};
-export const setCurrentCustomer = decoded => {
-    return {
-        type: 'SET_CURRENT_CUSTOMER',
-        payload: decoded
-    }
-};
-
-export const logoutCustomer = (history) => dispatch => {
-    localStorage.removeItem('customerToken');
-    dispatch(setCurrentCustomer({}));
-    if(history){
-        history.push('/');
-    }else{
-        window.location.href = '/'
-    }
+                    let customerFields = inputs;
+                    for(let i in Object.keys(customerFields)){
+                        let key = Object.keys(customerFields)[i];
+                        if(res[key]){
+                            customerFields[key].value = res[key]
+                        }
+                    }
+                    return {account:res, inputs:customerFields}
+                }
+            })
+            .catch(error=>{
+                return error;
+            });
 };
 
-export const setUserFromLocalStorage = () => dispatch => {
-    if(typeof(Storage) !== "undefined"){
-        if(localStorage.jwtToken) {
-            const decoded = jwt_decode(localStorage.jwtToken);
-            const currentTime = Date.now() / 1000;
-            if(decoded.exp < currentTime) {
-                dispatch(logoutUser());
-            }else{
-                dispatch(setCurrentUser(decoded));
-                setAuthToken(localStorage.jwtToken);
-            }
-        }
-    }
-
-};
-export const setCustomerFromLocalStorage = () => dispatch => {
-    if(typeof(Storage) !== "undefined"){
-        if(localStorage.customerToken) {
-            const decoded = jwt_decode(localStorage.customerToken);
-            const currentTime = Date.now() / 1000;
-            if(decoded.exp < currentTime) {
-                dispatch(logoutCustomer());
-            }else{
-                dispatch(setCurrentCustomer(decoded));
-                setAuthToken(localStorage.customerToken);
-            }
-        }
-    }
-
-};
-*/

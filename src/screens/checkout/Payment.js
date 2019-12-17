@@ -44,8 +44,8 @@ class Payment extends React.Component{
             AMOUNT :order ? order.total_price : false,
             DATETIME :order ? (order.date).toString(): false,
             HASH :order ? (order.hash).toString(): false,
-            // "payment-method" :order ? (order.hash): false,
             RECEIPTPAGEURL :RECEIPT_PAGE,
+            "payment-method":"on"
         });
         return <View
             style={styles.container}

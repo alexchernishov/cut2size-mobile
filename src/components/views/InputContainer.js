@@ -31,6 +31,8 @@ export class InputContainer extends Component{
                                 style={[commonStyles.input]}
                                 onFocus={e=>this.setState({focus:true})}
                                 onBlur={ e=>this.props.onBlur || this.setState({focus:false})}
+                                secureTextEntry={this.props.type==='password'}
+
                             />
                         </View>
                     </View>
