@@ -6,7 +6,7 @@ import {clearCart} from '../../actions/cart';
 import {connect} from 'react-redux';
 import CustomerOrders from './CustomerOrders';
 import {AccountInputs} from '../../../staticVars';
-import {get, postForm} from '../../api/main';
+import { postForm} from '../../api/main';
 import {NewCustomer} from './NewCustomer';
 
 class Account extends React.Component{

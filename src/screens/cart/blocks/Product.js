@@ -85,6 +85,7 @@ class Product extends React.Component{
                                 style={[styles.mainInputContainer,styles.rowItem]}
                             />
                             <QuantityInput
+                                changeQuantity = {this.props.changeQuantity}
                                 item = {this.props.item}
                                 style={[styles.mainInputContainer,styles.rowItem]}
                                 setProductQuantity = {this.setProductQuantity}

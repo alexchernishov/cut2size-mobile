@@ -74,7 +74,9 @@ class OrderItem extends React.Component{
                         };
                         return <Product
                             key={index}
-                            item={product}/>
+                            item={product}
+                            changeQuantity={false}
+                        />
                     })}
                 </View>
             }

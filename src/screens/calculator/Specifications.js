@@ -472,7 +472,7 @@ class Specifications extends React.Component {
                             {
                                 kitOptions.map((option,index)=>{
                                     let values =option.value;
-                                    values =values ?  values.split(',') :false;
+                                    values =(values && values.indexOf(',')!==-1) ?  values.split(',') :values;
                                     if(option.abbreviation.trim() !== 'CC' && option.abbreviation.trim() !== 'with_doors' && option.abbreviation.trim() !== 'CB'){
                                         return (<SelectOptions
                                                     key={index}

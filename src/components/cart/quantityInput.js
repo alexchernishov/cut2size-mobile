@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View,Text} from 'react-native';
 import {Icon} from 'react-native-elements';
 
 class QuantityInput extends React.Component{
@@ -7,7 +7,8 @@ class QuantityInput extends React.Component{
 
 
     render() {
-        return  <View style={this.props.style}>
+        return  this.props.changeQuantity ?
+                <View style={this.props.style}>
                     <TouchableOpacity
                         onPress={e=>this.props.setProductQuantity(e,this.props.item.id,(parseInt(this.props.item.quantity)-1))}
                         style={styles.quantityIconsTouch}
@@ -30,6 +31,17 @@ class QuantityInput extends React.Component{
                         <Icon  iconStyle={styles.quantityIcons}  name={'plus-square'} type={'font-awesome'}/>
                     </TouchableOpacity>
                 </View>
+            :
+                <View style={this.props.style}>
+                    <Text>Qty: </Text>
+                    <TextInput style={[styles.bigInput]}
+                               placeholder={'Quantity'}
+                               keyboardType={'numeric'}
+                               underlineColorAndroid='transparent'
+                               value={this.props.item.quantity.toString()}
+                               onChangeText={(cartQuantity) => this.props.setProductQuantity(false,this.props.item.id,cartQuantity)}/>
+                </View>
+
     }
 
 }

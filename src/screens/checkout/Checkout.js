@@ -11,6 +11,7 @@ import SignInScreen from '../auth/SignIn';
 import { TabView ,TabBar} from 'react-native-tab-view';
 import {AccountInputs} from '../../../staticVars';
 import {NewCustomer} from '../account/NewCustomer';
+import { MOBILE_URL} from 'react-native-dotenv'
 
 class Checkout extends React.Component{
 
@@ -19,12 +20,22 @@ class Checkout extends React.Component{
 
         super(props);
 
-
+        let inputs = {
+            email:{
+                value:null,
+                label:'Email',
+            },
+            password:{
+                value:null,
+                label:'Password',
+            },
+        };
+        inputs = {...inputs,...AccountInputs};
         this.state = {
             errors:{
-                ...Object.keys(AccountInputs)
+                ...Object.keys(inputs)
             },
-            inputs:AccountInputs,
+            inputs:inputs,
             shipping:true,
             account:false,
             edit: {
@@ -50,11 +61,16 @@ class Checkout extends React.Component{
     }
 
 
-
-
+    componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
+        if(this.props.customer.id !== prevProps.customer.id){
+            console.log(this.props,prevProps);
+            // this.getAccountInfo(this.props.customer.id);
+        }
+    }
 
     componentDidMount() {
 
+        console.log(this.props);
 
         this.getAccountInfo();
 
@@ -69,7 +85,7 @@ class Checkout extends React.Component{
         let customerId = id ? id : this.props.customer.id;
 
         if(customerId){
-            getAccountInfo(this.props.customer.id, this.props, this.state.inputs).then(res=>{
+            getAccountInfo(customerId, this.props, this.state.inputs).then(res=>{
                 if(res.errors){
                     this.setState({errors:res.errors})
                 }else{
@@ -112,6 +128,7 @@ class Checkout extends React.Component{
         initialData.products = this.props.products;
         initialData.subtotal_price = this.props.total;
         initialData.shipping_price = REACT_APP_SHIPPING_PRICE;
+        initialData.mobile = MOBILE_URL;
         initialData.total_price = parseFloat(this.props.total)+parseFloat(REACT_APP_SHIPPING_PRICE);
         //Send shipping same checkbox
         initialData.ship_pay = self.state.shipping;
@@ -177,15 +194,16 @@ class Checkout extends React.Component{
 
 
     render() {
+
         return <TabView
             navigationState={this.state}
             renderScene={this.renderScene}
             renderTabBar={props =>{
 
-                return !this.props.customer &&  <TabBar
+                return !this.props.customer.id &&  <TabBar
                     {...props}
                     indicatorStyle={{ backgroundColor: 'white' }}
-                    style={{ backgroundColor: 'pink' }}
+                    // style={{ backgroundColor: 'pink' }}
                 />
                 }
             }
@@ -203,6 +221,7 @@ class Checkout extends React.Component{
                             shippingShow={this.shippingShow}
                             submit={this.checkout}
                             submitText={'Proceed to payment'}
+                            password={true}
                         />;
             case 'login':
                 return <SignInScreen navigation = {this.props.navigation}/>;

@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import {MyText} from '../../components/views/Base';
 import {store} from '../../store/store';
 import jwt_decode from "jwt-decode";
+import { MOBILE_URL} from 'react-native-dotenv'
 
 class SignUpScreen extends React.Component {
     static navigationOptions = {
@@ -44,6 +45,7 @@ class SignUpScreen extends React.Component {
             email:this.state.email,
             password:this.state.password,
             repassword:this.state.repassword,
+            mobile:MOBILE_URL
         },false,this.props,"PUT").then(result=>{
             console.log(result);
             if(result.errors){

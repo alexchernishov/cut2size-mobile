@@ -12,13 +12,15 @@ class Cart extends React.Component{
 
 
     render() {
+
+        console.log('cart');
         return <ScrollView
             style={styles.container}
 
         >
             {this.props.products && this.props.products.length>0
                             ?
-                                 this.props.products.map((item,index) => <Product key={index} item={item}/>)
+                                 this.props.products.map((item,index) => <Product key={index} item={item} changeQuantity={true}/>)
                             :
                                 <View style={{
                                     marginLeft:10,
