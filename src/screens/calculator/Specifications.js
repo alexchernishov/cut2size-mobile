@@ -426,7 +426,7 @@ class Specifications extends React.Component {
                                 // width: undefined
                             }}
 
-                            resizeMode={'cover'}
+                            resizeMode={'contain'}
                             source={{
                                 uri: (
                                     typeof this.props.kit.calcOptions.CB !=="undefined"

@@ -99,7 +99,7 @@ class Room extends React.Component {
                                 }}
                                 // width={200}
                                 // height={100}
-                                resizeMode="cover"
+                                resizeMode="contain"
                                 source={{uri:item.small_image}}
                             ><View style={{
                                 flex:1,
