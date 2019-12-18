@@ -57,8 +57,9 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     quantityContainer:{
-        // justifyContent:'center',
-        // alignItems:'center',
+        justifyContent:'center',
+        alignItems:'center',
+        flex:1
     },
     quantityIconsTouch:{
         marginLeft:10,
@@ -67,8 +68,10 @@ const styles = StyleSheet.create({
         alignItems:'center',
 
     },
+    bigInput:{
+      textAlign:'center'
+    },
     quantityIcons:{
-        // fontSize:Math.min(win.width*0.2,win.height*0.2),
 
     },
 

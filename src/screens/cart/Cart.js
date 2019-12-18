@@ -13,7 +13,6 @@ class Cart extends React.Component{
 
     render() {
 
-        console.log('cart');
         return <ScrollView
             style={styles.container}
 

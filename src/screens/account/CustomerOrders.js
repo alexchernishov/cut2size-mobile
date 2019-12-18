@@ -1,6 +1,6 @@
 import React from 'react';
 import {setCurrentCustomer, setToken} from '../../actions/authentication';
-import {StyleSheet,View,Text,ScrollView} from 'react-native';
+import {StyleSheet, View, Text, ScrollView, ActivityIndicator} from 'react-native';
 import {clearCart} from '../../actions/cart';
 import {connect} from 'react-redux';
 import {get} from '../../api/main';
@@ -13,6 +13,7 @@ class CustomerOrders extends React.Component{
         orders:false,
         errors:false,
         success:false,
+        loading:false,
     };
 
     componentDidMount() {
@@ -23,18 +24,21 @@ class CustomerOrders extends React.Component{
 
     getOrders(){
 
-        get('API','api/v1/orders/customer',this.props.authToken,this.props)
-            .then(res=>{
+        this.setState({loading:true},()=>{
+            get('API','api/v1/orders/customer',this.props.authToken,this.props)
+                .then(res=>{
                     if(res.errors){
-                        this.setState({errors:res.errors})
+                        this.setState({errors:res.errors,loading:false})
                     }else{
-                        this.setState({orders:res});
+                        this.setState({orders:res,loading:false});
                     }
                 })
-                    .catch(error=>{
-                        this.setState({errors:error})
+                .catch(error=>{
+                    this.setState({errors:error,loading:false})
 
-                    });
+                });
+        });
+
 
     }
 
@@ -50,11 +54,26 @@ class CustomerOrders extends React.Component{
                 </ScrollView>
                 :
                 <View style={styles.container}>
+                    {this.renderFooter()}
                     <Text style={{textAlign:'center'}}>No orders found</Text>
                 </View>
 
     }
+    renderFooter = () => {
+        if (!this.state.loading) return null;
 
+        return (
+            <View
+                style={{
+                    paddingVertical: 20,
+                    borderTopWidth: 1,
+                    borderColor: "#CED0CE"
+                }}
+            >
+                <ActivityIndicator animating size="large" />
+            </View>
+        );
+    };
 
 }
 

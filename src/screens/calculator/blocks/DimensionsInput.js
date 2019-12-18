@@ -27,7 +27,7 @@ class DimensionsInput extends React.Component {
                     value={this.props.dim ? this.props.dim : ''}
                     multiline={false}
                     onChangeText={value => this.props.changeInput(this.props.type,value, false,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
-                    onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, false, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
+                    onEndEditing={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, false, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                     blurOnSubmit={true}
                     keyboardType={'numeric'}
                     style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
@@ -43,7 +43,7 @@ class DimensionsInput extends React.Component {
                             value={this.props.in[this.props.type][0]}
                             multiline={false}
                             onChangeText={value => this.props.changeInput(this.props.type,value, 1,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
-                            onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 1, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
+                            onEndEditing={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 1, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
                             style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
@@ -57,7 +57,7 @@ class DimensionsInput extends React.Component {
                             value={this.props.in[this.props.type][1]}
                             multiline={false}
                             onChangeText={value => this.props.changeInput(this.props.type,value, 2,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
-                            onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 2, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
+                            onEndEditing={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 2, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
                             style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}
@@ -71,7 +71,7 @@ class DimensionsInput extends React.Component {
                             value={this.props.in[this.props.type][2]}
                             multiline={false}
                             onChangeText={value => this.props.changeInput(this.props.type,value, 3,this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
-                            onBlur={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 3, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
+                            onEndEditing={value=>this.props.validateInput(this.props.type,value.nativeEvent.text, 3, this.props.kit.kitItem['min_'+this.props.type],this.props.kit.kitItem['max_'+this.props.type], 'number' )}
                             blurOnSubmit={true}
                             keyboardType={'numeric'}
                             style={[styles.input,styles.inchInput, (this.props.errors[this.props.type] ?  styles.borderError: false)]}

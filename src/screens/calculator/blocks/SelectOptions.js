@@ -16,7 +16,7 @@ class SelectOptions extends React.Component {
         return (
             <View style={{flexDirection:'column', alignItems:'center'}}>
                 <View style={{flexDirection:'row'}}><Text style={commonStyles.selectTitle}>{this.props.description}</Text></View>
-                <View style={{flexDirection:'row'}}>
+                <View style={{flexDirection:'row', alignItems:'center'}}>
                 {(this.props.values && this.props.values.length>1 && this.props.values instanceof Array )?
                     <MultiPlatformPicker
                         style={commonStyles.selectItem}

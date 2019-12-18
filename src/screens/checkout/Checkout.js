@@ -133,6 +133,11 @@ class Checkout extends React.Component{
         //Send shipping same checkbox
         initialData.ship_pay = self.state.shipping;
         initialData.receipt_page = RECEIPT_PAGE;
+
+        if(initialData.password=='' || initialData.password==null){
+            delete initialData.password;
+        }
+
         postForm('API','api/v1/orders/customer',initialData, this.props.authToken,this.props, 'PUT').then(res=>{
             if(!res){
                 return;

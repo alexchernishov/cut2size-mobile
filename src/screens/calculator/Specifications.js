@@ -109,6 +109,7 @@ class Specifications extends React.Component {
 
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
 
+
         if( JSON.stringify(this.state) !== JSON.stringify(prevState) ){
             this.checkInputs(this.state);
         }
@@ -131,22 +132,22 @@ class Specifications extends React.Component {
         let show = true;
         let self = this;
         let allOptsArr = Object.keys(nextState.calcOptions);
+
+
         for(let i in allOptsArr) {
-            if (nextState.calcOptions[allOptsArr[i]] === false && allOptsArr[i] !== 'comment' &&
-                (self.props.kit.kitItem['show_'+allOptsArr[i]] && self.props.kit.kitItem['show_'+allOptsArr[i]]===1)
+            if (!nextState.calcOptions[allOptsArr[i]] && allOptsArr[i] !== 'comment' &&
+                (self.props.kit.kitItem.show_attributes['show_'+allOptsArr[i]] && self.props.kit.kitItem.show_attributes['show_'+allOptsArr[i]]==1)
             ) {
                 show = false;
+                break;
             }
         }
 
 
-        if(typesSlugs.length<1){
-            // show = false;
-        }
-
         for(let j in typesSlugs){
             if(!nextState.calcOptions.materials[typesSlugs[j]]){
                 show = false;
+                break;
             }
         }
         store.dispatch(showPriceButton(show));
@@ -202,10 +203,7 @@ class Specifications extends React.Component {
                 value = parseInt(mmVal);
             }
         }
-
         if((min && max)&&(value > max || value < min )){
-
-
             calcOptionsState[name] = '';
 
             let errors = {};
@@ -512,12 +510,11 @@ class Specifications extends React.Component {
                             <InputContainer
                                 state={this.state}
                                 name={'quantity'}
-                                type={'text'}
+                                type={'number'}
                                 label={'Quantity'}
                                 value={this.state.calcOptions.quantity}
                                 onChangeText={value=>this.validateInput('quantity',value,false,1,1000,'number')}
-
-
+                                keyboardType={'numeric'}
                             />
                             <InputContainer
                                 state={this.state}

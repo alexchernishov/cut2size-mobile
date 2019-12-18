@@ -18,7 +18,8 @@ export default StyleSheet.create({
         marginTop:5,
         marginBottom:5,
         padding:10,
-        alignItems:'center'
+        alignItems:'center',
+        textAlign:'center',
     },
     input: {
         flex:1,
