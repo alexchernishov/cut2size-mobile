@@ -246,7 +246,7 @@ export const arrayObjKeyExists = (array,key) => {
 
 
 export const formatPrice=(price) =>{
-    return parseFloat(price).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')
+    return price.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')
 };
 export const formatName = (name) => {
     name = name.replace(/[_\-\.]/gi," ");

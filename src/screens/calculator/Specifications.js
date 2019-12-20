@@ -106,24 +106,12 @@ class Specifications extends React.Component {
     };
 
 
-
     componentDidUpdate(prevProps: Readonly<P>, prevState: Readonly<S>, snapshot: SS): void {
 
 
         if( JSON.stringify(this.state) !== JSON.stringify(prevState) ){
             this.checkInputs(this.state);
         }
-    }
-
-    componentWillUnmount(){
-
-        // let initialState = this.getInitialState();
-        // initialState.calcOptions.materials = this.state.calcOptions.materials;
-        //
-        // let calcOptions = initialState.calcOptions;
-        // this.setState({calcOptions:calcOptions});
-        // store.dispatch(showPriceButton(false));
-        // store.dispatch(setPrice({price: false}));
     }
 
 
@@ -315,8 +303,6 @@ class Specifications extends React.Component {
                 console.log(err);
             });
 
-
-
             let types = this.state.productTypes;
             for (let i in types){
                 if(FrontLogicTypes.indexOf(types[i].slug)!==-1){
@@ -345,8 +331,10 @@ class Specifications extends React.Component {
 
 
         }
-        this.setState({ calcOptions: calcOptionsState});
-        store.dispatch(setCalcOptions(calcOptionsState));
+        this.setState({ calcOptions: calcOptionsState}, ()=>{
+            this.checkInputs(this.state);
+            store.dispatch(setCalcOptions(calcOptionsState));
+        });
     }
     getPrice(e){
         // e.preventDefault();
