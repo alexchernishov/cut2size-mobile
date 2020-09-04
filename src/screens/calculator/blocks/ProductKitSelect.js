@@ -25,7 +25,7 @@ class ProductKitSelect extends React.Component {
         e.preventDefault();
         this.props.getProducts(slug).then(res => {
             let modalProducts = res;
-
+            console.log('modalProducts',modalProducts);
             store.dispatch(setPrice({price: false}));
             this.props.navigation.navigate('ProductList', {
                 modalProducts: modalProducts,

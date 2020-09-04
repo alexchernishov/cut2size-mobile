@@ -678,7 +678,7 @@
 			baseConfigurationReference = FE146B50A63C378905FACD17 /* Pods-cut2size.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = DS8PT626S9;
 				INFOPLIST_FILE = cut2size/Info.plist;
@@ -700,7 +700,7 @@
 			baseConfigurationReference = 523E3035F89591774DB72F97 /* Pods-cut2size.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_TEAM = DS8PT626S9;
 				INFOPLIST_FILE = cut2size/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

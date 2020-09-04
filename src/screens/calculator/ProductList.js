@@ -23,7 +23,7 @@ class ProductList extends React.Component {
 
     render() {
 
-        let products = (this.props.navigation.state.params.modalProducts && this.props.navigation.state.params.modalProducts[0]) ? this.props.navigation.state.params.modalProducts[0].products : [];
+        let products = (this.props.navigation.state.params.modalProducts && this.props.navigation.state.params.modalProducts.products) ? this.props.navigation.state.params.modalProducts.products : [];
 
 
         return (
@@ -40,7 +40,7 @@ class ProductList extends React.Component {
 
     renderItem=(item)=>{
 
-        let type = (this.props.navigation.state.params.modalProducts && this.props.navigation.state.params.modalProducts[0]) ? this.props.navigation.state.params.modalProducts[0].slug : false;
+        let type = (this.props.navigation.state.params.modalProducts && this.props.navigation.state.params.modalProducts) ? this.props.navigation.state.params.modalProducts.slug : false;
         item = item.item;
         return <TouchableOpacity
                 onPress={e=>this.chooseItem(e,type,item)}

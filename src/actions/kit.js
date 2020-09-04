@@ -25,6 +25,7 @@ export const setKitType = (itemType) => {
 
 };
 export const setKitItem = (kitItem) => {
+    kitItem.calcCategory  = kitItem.calcCategories[0];
     return store.dispatch(setKit({kitItem: kitItem}));
 };
 export const getCalcCategories = () => dispatch => {

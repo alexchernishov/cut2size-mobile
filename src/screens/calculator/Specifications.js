@@ -5,7 +5,7 @@ import {
     Image, Text,
     ScrollView,
     View,
-    SafeAreaView, TextInput,
+    Alert
 } from 'react-native';
 import {store} from '../../store/store';
 import {setCalcOptions, setKitItem, showPriceButton} from '../../actions/kit';
@@ -21,6 +21,7 @@ import commonStyles from './styles';
 import { CURRENCY_SYMBOL } from 'react-native-dotenv';
 import MainButton from '../../components/MainButton';
 import {InputContainer} from '../../components/views/InputContainer';
+import {groupArrayBy} from '../../functions/main';
 
 // Screen: Counter
 class Specifications extends React.Component {
@@ -123,8 +124,10 @@ class Specifications extends React.Component {
 
 
         for(let i in allOptsArr) {
-            if (!nextState.calcOptions[allOptsArr[i]] && allOptsArr[i] !== 'comment' &&
-                (self.props.kit.kitItem.show_attributes['show_'+allOptsArr[i]] && self.props.kit.kitItem.show_attributes['show_'+allOptsArr[i]]==1)
+            if (
+                ( nextState.calcOptions[allOptsArr[i]] === false || nextState.calcOptions[allOptsArr[i]] == null)
+                && allOptsArr[i] !== 'comment'
+                && ((this.props.kit.kitItem.show_attributes['show_'+allOptsArr[i]] && this.props.kit.kitItem.show_attributes['show_'+allOptsArr[i]]==1))
             ) {
                 show = false;
                 break;
@@ -133,7 +136,12 @@ class Specifications extends React.Component {
 
 
         for(let j in typesSlugs){
-            if(!nextState.calcOptions.materials[typesSlugs[j]]){
+            if(!nextState.calcOptions.materials[typesSlugs[j]]
+
+                && ((this.props.kit.kitItem.show_attributes['show_'+typesSlugs[j]] && this.props.kit.kitItem.show_attributes['show_'+typesSlugs[j]]==1))
+
+            )
+            {
                 show = false;
                 break;
             }
@@ -230,7 +238,7 @@ class Specifications extends React.Component {
 
     getProducts(type){
 
-        return  get('calc','/kit/api/product-attribute-values?fields=name,slug&expand=products&filter[slug]='+type )
+        return  get('calc','/kit/api/product-attribute-values?fields=name,slug&expand=products&filter[slug]='+type+'&kit_calc_category='+(this.props.kit.kitItem.calcCategory ?this.props.kit.kitItem.calcCategory.id : '' ))
 
     }
 
@@ -244,17 +252,34 @@ class Specifications extends React.Component {
         // if(this.props.kit.itemType==="fillers-gables-headers-toekick"){
         //     filtertype += '&filter[values.slug]=interior_material';
         // }
-        get('calc','/kit/api/product-attribute?filter[attributes.slug]=type'+filtertype )
+        let self = this;
+        get('calc','/kit/api/product-attribute?limit=100&filter[attributes.type]=popup,dropdown'+filtertype )
             .then(res => {
                 let productTypes = res;
-
                 productTypes = productTypes.filter(type=>{
                     let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type.slug] && this.props.kit.kitItem.show_attributes['show_'+type.slug]==0) );
-
                     return show ? type : false;
                 });
 
-                this.setState({ productTypes });
+                    this.setState({ productTypes },()=>{
+
+                        this.state.productTypes.forEach(function (type,index) {
+                            if(type.type==='dropdown'){
+                                self.getProducts(type.slug)
+                                    .then(res => {
+                                        let products = res;
+                                        if(products && products.products){
+                                            let productTypes = self.state.productTypes;
+                                            productTypes[index].products = products.products;
+                                            self.setState({ productTypes });
+                                        }
+                                    })
+                                    .catch(err => {
+                                        console.log(err);
+                                    });
+                            }
+                        })
+                    });
             })
             .catch(err => {
                 console.log(err);
@@ -264,7 +289,10 @@ class Specifications extends React.Component {
     }
 
     chooseMaterial(e, type,product){
-        e.preventDefault();
+        if(e){
+            e.preventDefault();
+        }
+        console.log(type,product);
         let self = this;
         let withDoorsTypes = ['exterior_material', 'door_material'];
         let FrontLogicTypes = ['door_style', 'drawer_style'];
@@ -349,7 +377,11 @@ class Specifications extends React.Component {
             .then(res => {
 
                 console.log(res);
-                store.dispatch(setPrice({price: res}));
+                if(!isNaN(res)){
+                    store.dispatch(setPrice({price: res}));
+                }else{
+                    Alert.alert(JSON.stringify(res))
+                }
             })
             .catch(err => {
                 console.log(err);
@@ -401,7 +433,7 @@ class Specifications extends React.Component {
         let kitOptions = this.props.kit.kitItem.options ;
         kitOptions= (kitOptions && kitOptions!== undefined) ? kitOptions : [];
         kitOptions = (kitOptions.id) ? [kitOptions] : kitOptions;
-
+        let productTypesBySlug  = this.state.productTypes ?  groupArrayBy(this.state.productTypes,'slug',0) : false;
         return (
                 <View  style={{flex:1,paddingBottom:30 }}>
                     <View style={{flex:1, }}>
@@ -421,6 +453,11 @@ class Specifications extends React.Component {
                                     ? this.props.kit.kitItem.cabinet_base_image
                                     : this.props.kit.kitItem.big_image
                             }}/>
+                        <Text style={{
+                            textAlign: 'center',
+                            // width: undefined
+                        }}>{this.props.kit.kitItem.name}</Text>
+
                     </View>
                 <ScrollView  style={styles.scrollView} >
                         <View style={{flex:1, alignItems:'center'}}>
@@ -475,22 +512,46 @@ class Specifications extends React.Component {
 
 
                             {(this.state.productTypes&&this.state.productTypes.length>0)&&
-                            this.state.productTypes.map((type,typeIndex)=>{
-                                let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type.slug] && this.props.kit.kitItem.show_attributes['show_'+type.slug]==0) );
-                                return( show &&
-                                    <ProductKitSelect
-                                        key={typeIndex}
-                                        type={type}
-                                        calcOptions={this.state.calcOptions}
-                                        onOpenModal = {this.onOpenModal}
-                                        getProducts = {this.getProducts}
-                                        onCloseModal = {this.onCloseModal}
-                                        modalOpen={this.state.modalOpen}
-                                        modalProducts={this.state.modalProducts}
-                                        navigation={this.props.navigation}
-                                        chooseMaterial={this.chooseMaterial}
-                                    />
-                                );
+                            this.props.kit.kitItem.show_attributes && Object.keys(this.props.kit.kitItem.show_attributes).map((key,typeIndex)=>{
+                                // let show = !((this.props.kit.kitItem.show_attributes && this.props.kit.kitItem.show_attributes['show_'+type.slug] && this.props.kit.kitItem.show_attributes['show_'+type.slug]==0) );
+                                let type = (productTypesBySlug && productTypesBySlug[key.replace('show_','')])  ?productTypesBySlug[key.replace('show_','')][0] : false;
+                                    switch(type.type){
+                                        case 'popup':
+                                            return(
+                                                <ProductKitSelect
+                                                    key={typeIndex}
+                                                    type={type}
+                                                    calcOptions={this.state.calcOptions}
+                                                    onOpenModal = {this.onOpenModal}
+                                                    getProducts = {this.getProducts}
+                                                    onCloseModal = {this.onCloseModal}
+                                                    modalOpen={this.state.modalOpen}
+                                                    modalProducts={this.state.modalProducts}
+                                                    navigation={this.props.navigation}
+                                                    chooseMaterial={this.chooseMaterial}
+                                                />
+                                            );
+                                        case 'dropdown':
+
+                                            let values =type.products ?  type.products.map((product)=>{
+                                                return product.name;
+                                            }):[];
+
+                                            return <SelectOptions
+                                                    key={typeIndex}
+                                                    name={type.slug}
+                                                    onChange={(name,value)=>{
+                                                        let productSelected = type.products.filter((product)=>{
+                                                            return product.name ===value;
+                                                        });
+                                                        productSelected = productSelected[0]?productSelected[0]:productSelected;
+                                                        this.chooseMaterial(false,name,productSelected)
+                                                    }}
+                                                        description = {type.description}
+                                                        values = {values}
+                                                        value={this.state.calcOptions.materials[type.slug] ? this.state.calcOptions.materials[type.slug].name :  'Choose '+type.description}
+                                                    />;
+                                    }
                             })
                             }
 

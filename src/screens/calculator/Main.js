@@ -29,6 +29,8 @@ class Calculator extends React.Component {
         super(props);
         setKitType(false);
         store.dispatch(setCabinet({cabinet: true}));
+
+
         if(!this.props || !this.props.calcCategories){
             store.dispatch(getCalcCategories());
         }

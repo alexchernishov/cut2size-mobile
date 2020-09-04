@@ -35,6 +35,7 @@ class SignInScreen extends React.Component {
             email:this.state.email,
             password:this.state.password,
         }).then(result=>{
+            console.log(result);
             if(result.errors){
                 this.setState({errors:result.errors, email:'', password:''})
             }
@@ -63,6 +64,7 @@ class SignInScreen extends React.Component {
                                keyboardType="email-address"
                                underlineColorAndroid='transparent'
                                value={this.state.email}
+                               autoCapitalize = 'none'
                                onChangeText={(email) => this.setState({email})}/>
                 </View>
 
@@ -74,6 +76,7 @@ class SignInScreen extends React.Component {
                                secureTextEntry={true}
                                underlineColorAndroid='transparent'
                                value={this.state.password}
+                               autoCapitalize = 'none'
                                onChangeText={(password) => this.setState({password})}/>
                 </View>
                 <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={(e) => this.onSubmit(e)}>

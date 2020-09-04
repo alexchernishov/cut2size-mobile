@@ -51,7 +51,6 @@ export const postForm = (type='API',url,params, token=false, props=false, method
 export const get = (type='API',url, token=false, props=false) => {
 
     let apiUrl = (type==='API') ? API_URL : CALC_API_URL;
-
     let config = {
         method: 'GET',
         headers: {
